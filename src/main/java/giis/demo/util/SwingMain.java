@@ -2,6 +2,11 @@ package giis.demo.util;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
+
+import Controller.VisualizarReservasComoSocioController;
+import Model.VisualizarReservasComoSocioModel;
+import View.VisualizarReservasComoSocioView;
+
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -80,6 +85,28 @@ public class SwingMain {
 			}
 		});
 		frame.getContentPane().add(btnCargarDatosIniciales);
+		
+		JButton btnVisualizarReservasComoSocio = new JButton("Ver reservas como socio");
+		btnVisualizarReservasComoSocio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				VisualizarReservasComoSocioController controller = new VisualizarReservasComoSocioController(new VisualizarReservasComoSocioModel(),new VisualizarReservasComoSocioView());
+				controller.initController();
+			}
+		});
+		frame.getContentPane().add(btnVisualizarReservasComoSocio);
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	}
 
 	public JFrame getFrame() { return this.frame; }
