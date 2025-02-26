@@ -29,20 +29,20 @@ INSERT INTO USUARIO (nombre, dni, password, rol, estado, recibos_pendientes) VAL
 ('Ana López', '44332211D', 'password789', 'NO_SOCIO', 'ACTIVO', 0);
 
 DELETE FROM INSTALACION;
-INSERT INTO INSTALACION (nombre, tipo, aforo_maximo, estado) VALUES
-('Piscina Olímpica', 'piscina', 50, 'DISPONIBLE'),
-('Pista de Tenis 1', 'tenis', 4, 'DISPONIBLE'),
-('Sala de Spinning', 'spinning', 20, 'DISPONIBLE');
+INSERT INTO INSTALACION (nombre, tipo, aforo_maximo, estado, precio_hora) VALUES
+('Piscina Olímpica', 'piscina', 50, 'DISPONIBLE', 3.00),
+('Pista de Tenis 1', 'tenis', 4, 'DISPONIBLE', 4.50),
+('Sala de Spinning', 'spinning', 20, 'DISPONIBLE', 2.00);
 
 DELETE FROM PERIODO_INSCRIPCION;
-INSERT INTO PERIODO_INSCRIPCION (nombre, fecha_inicio, fecha_fin) VALUES
-('Cuatrimestre 1', '2025-01-01', '2025-04-30'),
-('Cuatrimestre 2', '2025-05-01', '2025-08-31');
+INSERT INTO PERIODO_INSCRIPCION (nombre, fecha_inicio_socios, fecha_fin_socios, fecha_fin_no_socios) VALUES
+('Cuatrimestre 1', '2025-01-01', '2025-03-31', '2025-04-30'),
+('Cuatrimestre 2', '2025-05-01', '2025-07-30', '2025-08-30');
 
 DELETE FROM ACTIVIDAD;
-INSERT INTO ACTIVIDAD (nombre, descripcion, instalacion_id, aforo_maximo, coste_socio, coste_no_socio, fecha_inicio, fecha_fin, dias, hora_inicio, hora_fin, periodo_inscripcion_socio_id, periodo_inscripcion_no_socio_id) VALUES
-('Spinning Intensivo', 'Clase de spinning avanzada', 3, 15, 10.00, 15.00, '2025-03-01', '2025-03-31', 'Lunes,Miércoles,Viernes', '18:00', '19:00', 1, 2),
-('Torneo de Tenis', 'Competencia amateur', 2, 8, 5.00, 10.00, '2025-04-10', '2025-04-15', 'Sábado,Domingo', '09:00', '14:00', 1, 2);
+INSERT INTO ACTIVIDAD (nombre, descripcion, instalacion_id, aforo_maximo, coste_socio, coste_no_socio, fecha_inicio, fecha_fin, dias, hora_inicio, hora_fin, periodo_inscripcion_id) VALUES
+('Spinning Intensivo', 'Clase de spinning avanzada', 3, 15, 10.00, 15.00, '2025-03-01', '2025-03-31', 'Lunes,Miércoles,Viernes', '18:00', '19:00', 2),
+('Torneo de Tenis', 'Competencia amateur', 2, 8, 5.00, 10.00, '2025-04-10', '2025-04-15', 'Sábado,Domingo', '09:00', '14:00', 1);
 
 DELETE FROM RESERVA_INSTALACION;
 INSERT INTO RESERVA_INSTALACION (usuario_id, instalacion_id, fecha, hora_inicio, hora_fin, pagado) VALUES
