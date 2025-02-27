@@ -1,3 +1,9 @@
+
+/*
+
+	Comente porque daba error al importar la libreria del jdatechooser
+
+
 package diego_periodoInscripcion;
 
 import java.awt.EventQueue;
@@ -18,9 +24,12 @@ import java.awt.event.ActionListener;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 
+
+
+
 public class periodoInscripcion extends JFrame {
 	
-	// 
+	
 	
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
@@ -28,11 +37,15 @@ public class periodoInscripcion extends JFrame {
 	// Variables
 	private JTextField textoNombre;
 	private JTextField textoDescripcion;
-	private JDateChooser textoFechaInicial, textoFechaFinalNoSocios, textoFechaFinal;
+    private JDateChooser textoFechaInicial, textoFechaFinalNoSocios, textoFechaFinal;
+    
+    */
 
 	/**
 	 * Launch the application.
 	 */
+    
+    /*
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
@@ -46,9 +59,7 @@ public class periodoInscripcion extends JFrame {
 		});
 	}
 
-	/**
-	 * Create the frame.
-	 */
+	
 	public periodoInscripcion() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 582, 365);
@@ -119,7 +130,9 @@ public class periodoInscripcion extends JFrame {
 		contentPane.add(textoFechaFinal);
 	}
 	
-	// Método Creación Período
+	
+	
+
 	private void crearPeriodo() {
 		String nombre = textoNombre.getText();
         String descripcion = textoDescripcion.getText();
@@ -138,7 +151,17 @@ public class periodoInscripcion extends JFrame {
                 "Inicio: " + fechaInicio + "\n" +
                 "Fin Socios: " + fechaFinalSocios + "\n" +
                 "Fin No Socios: " + fechaFinalNoSocios, "Éxito", JOptionPane.INFORMATION_MESSAGE);
+        
+        
+      
+        
 	}
 	
 	
 }
+
+
+  */
+
+
+

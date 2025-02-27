@@ -3,15 +3,15 @@ package giis.demo.util;
 import java.awt.EventQueue;
 import javax.swing.JFrame;
 
-import Controller.VisualizarReservasComoSocioController;
-import Model.VisualizarReservasComoSocioModel;
-import View.VisualizarReservasComoSocioView;
+import controller.VisualizarReservasComoSocioController;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import giis.demo.tkrun.*;
+import model.VisualizarReservasComoSocioModel;
+import view.VisualizarReservasComoSocioView;
 
 /**
  * Punto de entrada principal que incluye botones para la ejecucion de las pantallas 
