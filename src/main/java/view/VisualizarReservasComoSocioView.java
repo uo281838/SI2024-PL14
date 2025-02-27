@@ -1,10 +1,12 @@
-package View;
+package view;
 
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.awt.BorderLayout;
+import java.awt.Color;
+
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.JScrollPane;
@@ -30,6 +32,7 @@ public class VisualizarReservasComoSocioView {
 	private JComboBox CBInstalaciones;
 	private JButton btnBuscar;
 	private JFormattedTextField FTFFecha;
+	private JLabel TFPrecioHora;
 
 	/**
 	 * Launch the application.
@@ -62,6 +65,12 @@ public class VisualizarReservasComoSocioView {
 	    TablaReservas.setModel(modelo); // Reemplaza el modelo de la tabla existente
 	}
 	
+	
+	public DefaultTableModel getTablaReservasModel() {
+	    return (DefaultTableModel) this.TablaReservas.getModel(); // Obtener y devolver el modelo de la tabla
+	}
+	
+	
 	public void setCBReservasModel(DefaultComboBoxModel modelo) {
 		CBInstalaciones.setModel(modelo);
 		
@@ -69,6 +78,22 @@ public class VisualizarReservasComoSocioView {
 	
 	
 	
+	
+	
+	
+	
+	
+	
+
+	public JLabel getTFPrecioHora() {
+		return TFPrecioHora;
+	}
+
+
+	public void setTFPrecioHora(JLabel tFPrecioHora) {
+		TFPrecioHora = tFPrecioHora;
+	}
+
 
 	public JButton getBtnBuscar() {
 		return btnBuscar;
@@ -137,6 +162,10 @@ public class VisualizarReservasComoSocioView {
 	public void setCBInstalaciones(JComboBox cBInstalaciones) {
 		CBInstalaciones = cBInstalaciones;
 	}
+	
+	public JTable getTablaReservas() {
+		return TablaReservas;
+	}
 
 
 	/**
@@ -161,7 +190,7 @@ public class VisualizarReservasComoSocioView {
 		frame.getContentPane().add(lblNewLabel);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(17, 162, 252, 280);
+		scrollPane.setBounds(17, 162, 279, 280);
 		frame.getContentPane().add(scrollPane);
 		
 		TablaReservas = new JTable();
@@ -216,16 +245,25 @@ public class VisualizarReservasComoSocioView {
 		frame.getContentPane().add(CBInstalaciones);
 		
 		FTFFecha = new JFormattedTextField();
+
+		
 		FTFFecha.setToolTipText("");
 		FTFFecha.setBounds(348, 33, 96, 19);
 		frame.getContentPane().add(FTFFecha);
 		
-		JLabel lblNewLabel_4 = new JLabel("Precio por hora de la instalación:");
+		JLabel lblNewLabel_4 = new JLabel("€/hora de la instalación:");
 		lblNewLabel_4.setBounds(17, 139, 156, 13);
 		frame.getContentPane().add(lblNewLabel_4);
 		
-		JLabel TFPrecioHora = new JLabel("New label");
+		TFPrecioHora = new JLabel("");
 		TFPrecioHora.setBounds(184, 139, 85, 13);
 		frame.getContentPane().add(TFPrecioHora);
+		
+		JLabel lblNewLabel_5 = new JLabel("YYYY-MM-DD");
+		lblNewLabel_5.setBounds(462, 36, 119, 13);
+		frame.getContentPane().add(lblNewLabel_5);
 	}
+
+
+	
 }
