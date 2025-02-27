@@ -24,8 +24,6 @@ public class VisualizarReservasComoSocioView {
 	private JTextField TFDni;
 	private JTable TablaReservas;
 	private JTextField TFDescripcion;
-	private JLabel lblNewLabel_2;
-	private JTextField TFPropietarioReserva;
 	private JLabel lblNewLabel_3;
 	private JTextField TFAforo;
 	private JSeparator separator_1;
@@ -166,6 +164,18 @@ public class VisualizarReservasComoSocioView {
 	public JTable getTablaReservas() {
 		return TablaReservas;
 	}
+	
+	
+
+
+	public JTextField getTFDescripcion() {
+		return TFDescripcion;
+	}
+
+
+	public void setTFDescripcion(JTextField tFDescripcion) {
+		TFDescripcion = tFDescripcion;
+	}
 
 
 	/**
@@ -213,21 +223,12 @@ public class VisualizarReservasComoSocioView {
 		frame.getContentPane().add(TFDescripcion);
 		TFDescripcion.setColumns(10);
 		
-		lblNewLabel_2 = new JLabel("Reserva de:");
-		lblNewLabel_2.setBounds(356, 222, 74, 13);
-		frame.getContentPane().add(lblNewLabel_2);
-		
-		TFPropietarioReserva = new JTextField();
-		TFPropietarioReserva.setBounds(356, 246, 74, 19);
-		frame.getContentPane().add(TFPropietarioReserva);
-		TFPropietarioReserva.setColumns(10);
-		
 		lblNewLabel_3 = new JLabel("Aforo:");
-		lblNewLabel_3.setBounds(462, 222, 45, 13);
+		lblNewLabel_3.setBounds(356, 227, 45, 13);
 		frame.getContentPane().add(lblNewLabel_3);
 		
 		TFAforo = new JTextField();
-		TFAforo.setBounds(461, 246, 74, 19);
+		TFAforo.setBounds(356, 250, 74, 19);
 		frame.getContentPane().add(TFAforo);
 		TFAforo.setColumns(10);
 		

@@ -41,16 +41,28 @@ public class VisualizarReservasComoSocioController {
 			// Verifica si una fila está seleccionada
 			if (!e.getValueIsAdjusting()) {
 				int selectedRow = this.view.getTablaReservas().getSelectedRow();
+				System.out.println(selectedRow);
 
 				if (selectedRow != -1) { // Si se ha seleccionado una fila
 
-					// Obtener los datos de la fila seleccionada
-					String horaSeleccionada = (String) this.view.getTablaReservas().getValueAt(selectedRow, 0); // Columna
-																												// "Horario"
+					// Obtener los valores de la fila seleccionada
+	                String reservadoPor = (String) this.view.getTablaReservas().getValueAt(selectedRow, 2); 
 
-					// Obtener la fecha desde el JTextField o el JFormattedTextField
-					String fechaSeleccionada = this.view.getFTFFecha().getText(); // Asumiendo que usas un
-																					// JFormattedTextField para la fecha
+	                // Mensaje a mostrar en el JTextField
+	                String mensaje = "";
+
+	                if (reservadoPor.equalsIgnoreCase("N/A")) { 
+	                	this.view.getTFDescripcion().setText("Esta hora está disponible");
+	                } else if (reservadoPor.equalsIgnoreCase("Actividad")) { 
+	                    mensaje = "Esta hora está ocupada por una actividad";
+	                } else if (reservadoPor.equals("Reservado por ti")) { 
+	                    // Obtener nombre y apellidos del usuario
+	                    String nombreCompleto = this.model.getNombreSocio(this.view.getTFDni().getText());
+	                    this.view.getTFDescripcion().setText("Reservado por " + nombreCompleto);
+	                } else { 
+	                	this.view.getTFDescripcion().setText("Esta hora está reservada por otro usuario");
+	                }
+
 
 				}
 			}

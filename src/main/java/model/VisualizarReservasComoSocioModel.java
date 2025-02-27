@@ -53,4 +53,13 @@ public class VisualizarReservasComoSocioModel {
 		
 	}
 
+	public String getNombreSocio(String dni) {
+		String nombre = null;
+	    String sql = "SELECT nombre FROM USUARIO WHERE dni = ?";
+	    
+		List<Object[]> resultado = db.executeQueryArray(sql, dni);
+		return ((String) resultado.get(0)[0]);
+
+	}
+
 }
