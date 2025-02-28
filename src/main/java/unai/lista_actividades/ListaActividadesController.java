@@ -73,7 +73,6 @@ public class ListaActividadesController {
         Date fechaInicio = null;
         Date fechaFin = null;
 
-        // Test, aun no he hecho la consulta en el model
         switch (periodoSeleccionado) {
             case "Enero":
                 fechaInicio = Util.isoStringToDate("2024-01-01");
