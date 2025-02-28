@@ -30,48 +30,8 @@ public class VisualizarReservasComoSocioController {
 		this.view = v;
 		this.initview();
 	}
-
-	public void initController() {
-
-		this.view.getBtnBuscar()
-				.addActionListener(e -> SwingUtil.exceptionWrapper(() -> actualizarTabla(view.getTFDni().getText(),
-						view.getFTFFecha().getText(), view.getCBInstalaciones().getSelectedItem().toString())));
-
-		this.view.getTablaReservas().getSelectionModel().addListSelectionListener(e -> {
-			// Verifica si una fila está seleccionada
-			if (!e.getValueIsAdjusting()) {
-				int selectedRow = this.view.getTablaReservas().getSelectedRow();
-				System.out.println(selectedRow);
-
-				if (selectedRow != -1) { // Si se ha seleccionado una fila
-
-					// Obtener los valores de la fila seleccionada
-	                String reservadoPor = (String) this.view.getTablaReservas().getValueAt(selectedRow, 2); 
-
-	                // Mensaje a mostrar en el JTextField
-	                String mensaje = "";
-
-	                if (reservadoPor.equalsIgnoreCase("N/A")) { 
-	                	this.view.getTFDescripcion().setText("Esta hora está disponible");
-	                } else if (reservadoPor.equalsIgnoreCase("Actividad")) { 
-	                    mensaje = "Esta hora está ocupada por una actividad";
-	                } else if (reservadoPor.equals("Reservado por ti")) { 
-	                    // Obtener nombre y apellidos del usuario
-	                    String nombreCompleto = this.model.getNombreSocio(this.view.getTFDni().getText());
-	                    this.view.getTFDescripcion().setText("Reservado por " + nombreCompleto);
-	                } else { 
-	                	this.view.getTFDescripcion().setText("Esta hora está reservada por otro usuario");
-	                }
-
-
-				}
-			}
-		});
-
-	}
-
+	
 	private void initview() {
-
 		// Crear un modelo de tabla vacío con las columnas "Horario" y "Estado"
 		DefaultTableModel modelo = new DefaultTableModel();
 		modelo.addColumn("Horario");
@@ -85,56 +45,133 @@ public class VisualizarReservasComoSocioController {
 		this.view.getFrame().setVisible(true);
 
 	}
+	
 
+	public void initController() {
+
+		this.view.getBtnBuscar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> {
+			actualizarTabla(view.getTFDni().getText(), view.getFTFFecha().getText(),
+					view.getCBInstalaciones().getSelectedItem().toString());
+			actualizarAforo(view.getCBInstalaciones().getSelectedItem().toString());
+		}));
+
+		// Listener para la seleccion de columnas en la tabla
+		this.view.getTablaReservas().getSelectionModel().addListSelectionListener(e -> {
+			// Verifica si una fila está seleccionada
+			if (!e.getValueIsAdjusting()) {
+				int selectedRow = this.view.getTablaReservas().getSelectedRow();
+				System.out.println(selectedRow);
+
+				if (selectedRow != -1) { // Si se ha seleccionado una fila
+
+					// Obtener los valores de la fila seleccionada
+					String reservadoPor = (String) this.view.getTablaReservas().getValueAt(selectedRow, 2);
+
+					// Mensaje a mostrar en el JTextField
+					String mensaje = "";
+
+					if (reservadoPor.equalsIgnoreCase("N/A")) {
+						this.view.getTFDescripcion().setText("Esta hora está disponible");
+					} else if (reservadoPor.equals("Reservado por ti")) {
+						// Obtener nombre y apellidos del usuario
+						String nombreCompleto = this.model.getNombreSocio(this.view.getTFDni().getText());
+						this.view.getTFDescripcion().setText("Reservado por " + nombreCompleto);
+					} else if (reservadoPor.equals("Reservado")) {
+						// En este caso, la hora está reservada por otro usuario
+						this.view.getTFDescripcion().setText("Esta hora está reservada por otro usuario");
+					} else {
+						String nombreActividad = (String) this.view.getTablaReservas().getValueAt(selectedRow, 2); // Obtiene
+																													// el
+																													// nombre
+																													// de
+																													// la
+																													// actividad
+																													// de
+																													// la
+																													// columna
+						mensaje = "Reservado para '" + nombreActividad + "'";
+						this.view.getTFDescripcion().setText(mensaje);
+					}
+				}
+			}
+		});
+
+	}
+
+	//Funcion para mostrar el aforo de una determinada instalación
+	private void actualizarAforo(String instalacionSeleccionada) {
+		// Validar que la instalación seleccionada no esté vacía
+		if (instalacionSeleccionada != null && !instalacionSeleccionada.trim().isEmpty()) {
+			// Obtener el aforo máximo de la instalación seleccionada
+			Integer aforo = this.model.getAforoInstalacion(instalacionSeleccionada);
+
+			// Actualizar la etiqueta con el aforo máximo
+			if (aforo != null) {
+				this.view.getLblAforo().setText(aforo.toString());
+			} else {
+				this.view.getLblAforo().setText("");
+			}
+		}
+	}
+
+	
+	
+
+	//Funcion para obtener los nombres de las instalaciones y poder insertarlos en el combobox
 	public void obtenerNombreInstalaciones() {
 
+		// Obtener los resultados de la consulta (nombre y precio por hora)
 		List<Object[]> l = this.model.getNombreInstalaciones();
 
 		DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<String>();
 
+		// Iterar sobre los resultados
 		for (Object[] fila : l) {
 			if (fila.length > 0 && fila[0] != null) {
-				modelo.addElement(fila[0].toString());
-				System.out.println(fila[0].toString());
-
+				// Aquí estamos tomando solo el nombre para mostrar en el ComboBox
+				String nombreInstalacion = fila[0].toString();
+				modelo.addElement(nombreInstalacion);
 			}
 		}
 
 		this.view.setCBReservasModel(modelo);
 
 	}
+
 	
-	
-	
+	//Funcion para obtener el precio por hora de las instalaciones
 	public void obtenerPrecioHora(String nombreInstalacion) {
-	    // Validar que el nombre de la instalación no esté vacío
-	    if (nombreInstalacion == null || nombreInstalacion.trim().isEmpty()) {
-	        JOptionPane.showMessageDialog(null, "Por favor, seleccione una instalación.", "Error",
-	                JOptionPane.ERROR_MESSAGE);
-	        return;
-	    }
+		// Validar que el nombre de la instalación no esté vacío
+		if (nombreInstalacion == null || nombreInstalacion.trim().isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Por favor, seleccione una instalación.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
 
-	    // Consultar el precio por hora de la instalación seleccionada
-	    Double precioHora = this.model.getPrecioHoraInstalacion(nombreInstalacion);
+		// Consultar el precio por hora de la instalación seleccionada
+		Double precioHora = this.model.getPrecioHoraInstalacion(nombreInstalacion);
 
-	    // Verificar si se obtuvo el precio
-	    if (precioHora != null) {
-	    	
-	        this.view.getTFPrecioHora().setText(String.format("%.2f", precioHora)+"€");   
-	    } else {
-	        // Si no se encuentra el precio, mostrar un mensaje de error
-	        JOptionPane.showMessageDialog(null, "No se pudo obtener el precio de la instalación seleccionada.", "Error",
-	                JOptionPane.ERROR_MESSAGE);
-	    }
+		// Verificar si se obtuvo el precio
+		if (precioHora != null) {
+
+			this.view.getTFPrecioHora().setText(String.format("%.2f", precioHora) + "€");
+		} else {
+			// Si no se encuentra el precio, mostrar un mensaje de error
+			JOptionPane.showMessageDialog(null, "No se pudo obtener el precio de la instalación seleccionada.", "Error",
+					JOptionPane.ERROR_MESSAGE);
+		}
 	}
-	
-	
-	
 
+	
+	
+	//Funcion principal de la clase , que se invoca al pulsar el boton de busqueda y que rellena la tabla con todos los parametros pasados
+	//y muestra las reservas a partir de horas en los siguientes 30 dias
+	
 	public void actualizarTabla(String dni, String fecha, String instalacion) {
 		// Limpiar la tabla antes de mostrar nuevos datos
 		DefaultTableModel modelo = (DefaultTableModel) this.view.getTablaReservasModel();
-		modelo.setRowCount(0); // Esto elimina todas las filas de la tabla
+		modelo.setRowCount(0);
+		
 
 		if (fecha == null || fecha.trim().isEmpty() || !fecha.matches("\\d{4}-\\d{2}-\\d{2}")) {
 			// Verifica formato YYYY-MM-DD
@@ -156,6 +193,9 @@ public class VisualizarReservasComoSocioController {
 					JOptionPane.ERROR_MESSAGE);
 			return;
 		}
+
+		//Muestra la fecha seleccionada en la cabecera de la tabla
+		this.view.getLblFechaTabla().setText(fecha);
 
 		// Verificar si la fecha ingresada está más de 30 días en el futuro
 		try {
@@ -184,20 +224,23 @@ public class VisualizarReservasComoSocioController {
 			return;
 		}
 		
-		
+
 		this.obtenerPrecioHora(instalacion);
 
-		// Obtener reservas de la BD para esa fecha e instalación
+		//Almacenamos la informacion traida de la bd
 		List<Object[]> reservas = this.model.getReservarInstalaciones(fecha, instalacion);
+		List<Object[]> actividades = this.model.getReservarActividades(fecha, instalacion);
 
 		String[] horarios = { "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00",
 				"18:00", "19:00", "20:00", "21:00", "22:00" };
 
-		// Crear un Set para tener un acceso rápido a las horas y un mapa para asociar
-		// las horas con los usuarios que hicieron la reserva
+		// Crear un Set para tener un acceso rápido a las horas reservadas
+		// (instalaciones + actividades)
 		Set<String> horariosReservados = new HashSet<>();
-		Map<String, String> reservadosPor = new HashMap<>(); // Usamos un Map para asociar cada hora con el 'dni_socio'
+		Map<String, String> reservadosPor = new HashMap<>();
+																
 
+		// Añadir reservas de socios a la lista
 		for (Object[] reserva : reservas) {
 			if (reserva.length > 3 && reserva[0] != null && reserva[1] != null && reserva[4] != null) {
 				String horaInicio = reserva[0].toString();
@@ -207,34 +250,46 @@ public class VisualizarReservasComoSocioController {
 			}
 		}
 
+		// Añadir actividades a la lista
+		for (Object[] actividad : actividades) {
+			if (actividad.length > 1 && actividad[0] != null && actividad[1] != null) {
+				String horaInicio = actividad[0].toString();
+				String nombreActividad = actividad[1].toString(); // El nombre de la actividad
+				horariosReservados.add(horaInicio); // Añadimos la actividad al conjunto de horarios reservados
+				reservadosPor.put(horaInicio, nombreActividad); // Guardar el nombre de la actividad
+			}
+		}
+
 		// Crear el modelo de la tabla
 		DefaultTableModel modelo1 = new DefaultTableModel();
 
-		// Definir columnas, incluyendo "Reservado por"
+		//Se definen las columnas
 		modelo1.addColumn("Horario");
 		modelo1.addColumn("Estado");
 		modelo1.addColumn("Reservado por");
 
+
+		
+		//Rellenamos las filas de la tabla
 		for (String hora : horarios) {
 			String estado = horariosReservados.contains(hora) ? "Reservado" : "Disponible";
-			String reservadoPorUsuario = horariosReservados.contains(hora) ? reservadosPor.get(hora) : "N/A"; // Recuperar
-																												// el
-																												// usuario
-																												// que
-																												// reservó,
-																												// si lo
-																												// hay
+			String reservadoPorUsuario = horariosReservados.contains(hora)
+					? (reservadosPor.get(hora).equals("Actividad") ? "Actividad" : reservadosPor.get(hora))
+					: "N/A";
 
 			// Si el DNI ingresado coincide con el del usuario que reservó, mostrar
 			// "Reservado por ti"
 			if (reservadoPorUsuario.equals(dni)) {
 				reservadoPorUsuario = "Reservado por ti";
+			} else if (reservadoPorUsuario != "Actividad" && reservadoPorUsuario != "N/A") {
+				// Si está reservado por otro socio, mostrar "socio" en lugar de su DNI
+				reservadoPorUsuario = "Socio";
 			}
-
+			
+			//Se añade la fila
 			modelo1.addRow(new Object[] { hora, estado, reservadoPorUsuario });
 		}
 
-		// Asignar modelo a la tabla en la vista
 		this.view.setTablaReservasModel(modelo1);
 	}
 

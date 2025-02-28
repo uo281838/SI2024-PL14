@@ -25,12 +25,13 @@ public class VisualizarReservasComoSocioView {
 	private JTable TablaReservas;
 	private JTextField TFDescripcion;
 	private JLabel lblNewLabel_3;
-	private JTextField TFAforo;
 	private JSeparator separator_1;
 	private JComboBox CBInstalaciones;
 	private JButton btnBuscar;
 	private JFormattedTextField FTFFecha;
 	private JLabel TFPrecioHora;
+	private JLabel LblAforo;
+	private JLabel lblFechaTabla;
 
 	/**
 	 * Launch the application.
@@ -82,6 +83,16 @@ public class VisualizarReservasComoSocioView {
 	
 	
 	
+
+	public JLabel getLblAforo() {
+		return LblAforo;
+	}
+
+
+	public void setLblAforo(JLabel lblAforo) {
+		LblAforo = lblAforo;
+	}
+
 
 	public JLabel getTFPrecioHora() {
 		return TFPrecioHora;
@@ -142,6 +153,16 @@ public class VisualizarReservasComoSocioView {
 	
 	
 
+	public JLabel getLblFechaTabla() {
+		return lblFechaTabla;
+	}
+
+
+	public void setLblFechaTabla(JLabel lblFechaTabla) {
+		this.lblFechaTabla = lblFechaTabla;
+	}
+
+
 	public JFormattedTextField getFTFFecha() {
 		return FTFFecha;
 	}
@@ -183,7 +204,7 @@ public class VisualizarReservasComoSocioView {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 623, 517);
+		frame.setBounds(100, 100, 623, 581);
 		frame.getContentPane().setLayout(null);
 		
 		JLabel EtiquetaIntroduceId = new JLabel("Introduce tu DNI:");
@@ -200,7 +221,7 @@ public class VisualizarReservasComoSocioView {
 		frame.getContentPane().add(lblNewLabel);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(17, 162, 279, 280);
+		scrollPane.setBounds(10, 225, 279, 280);
 		frame.getContentPane().add(scrollPane);
 		
 		TablaReservas = new JTable();
@@ -224,17 +245,12 @@ public class VisualizarReservasComoSocioView {
 		TFDescripcion.setColumns(10);
 		
 		lblNewLabel_3 = new JLabel("Aforo:");
-		lblNewLabel_3.setBounds(356, 227, 45, 13);
+		lblNewLabel_3.setBounds(10, 162, 45, 13);
 		frame.getContentPane().add(lblNewLabel_3);
-		
-		TFAforo = new JTextField();
-		TFAforo.setBounds(356, 250, 74, 19);
-		frame.getContentPane().add(TFAforo);
-		TFAforo.setColumns(10);
 		
 		separator_1 = new JSeparator();
 		separator_1.setOrientation(SwingConstants.VERTICAL);
-		separator_1.setBounds(306, 115, 19, 327);
+		separator_1.setBounds(306, 115, 19, 419);
 		frame.getContentPane().add(separator_1);
 		
 		btnBuscar = new JButton("Buscar");
@@ -253,7 +269,7 @@ public class VisualizarReservasComoSocioView {
 		frame.getContentPane().add(FTFFecha);
 		
 		JLabel lblNewLabel_4 = new JLabel("€/hora de la instalación:");
-		lblNewLabel_4.setBounds(17, 139, 156, 13);
+		lblNewLabel_4.setBounds(10, 139, 156, 13);
 		frame.getContentPane().add(lblNewLabel_4);
 		
 		TFPrecioHora = new JLabel("");
@@ -263,8 +279,13 @@ public class VisualizarReservasComoSocioView {
 		JLabel lblNewLabel_5 = new JLabel("YYYY-MM-DD");
 		lblNewLabel_5.setBounds(462, 36, 119, 13);
 		frame.getContentPane().add(lblNewLabel_5);
+		
+		LblAforo = new JLabel("");
+		LblAforo.setBounds(70, 162, 45, 13);
+		frame.getContentPane().add(LblAforo);
+		
+		lblFechaTabla = new JLabel("");
+		lblFechaTabla.setBounds(10, 202, 171, 13);
+		frame.getContentPane().add(lblFechaTabla);
 	}
-
-
-	
 }
