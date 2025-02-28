@@ -7,6 +7,7 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import giis.demo.tkrun.*;
+import unai.lista_actividades.*;
 
 /**
  * Punto de entrada principal que incluye botones para la ejecucion de las pantallas 
@@ -80,6 +81,16 @@ public class SwingMain {
 			}
 		});
 		frame.getContentPane().add(btnCargarDatosIniciales);
+		
+		JButton btnListaActividades = new JButton("Ver lista de actividades");
+		btnListaActividades.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ListaActividadesController controller= new ListaActividadesController(new ListaActividadesModel(), new ListaActividadesView());
+				controller.initController();
+				
+			}
+		});
+		frame.getContentPane().add(btnListaActividades);
 	}
 
 	public JFrame getFrame() { return this.frame; }

@@ -13,7 +13,7 @@ public class ListaActividadesModel {
 	private Database db=new Database();
 
 
-	public List<ListaActividadesDisplayDTO> getListaCarreras(Date fechaInicio, Date fechaFin) {
+	public List<ListaActividadesDisplayDTO> getListaActividades(String fechaInicio, String fechaFin) {
 		validateNotNull(fechaInicio,MSG_PERIODO_NO_NULO);
 		validateNotNull(fechaFin,MSG_PERIODO_NO_NULO);
 		String sql = 
@@ -30,11 +30,11 @@ public class ListaActividadesModel {
 		        + "LEFT JOIN PERIODO_INSCRIPCION p ON a.periodo_inscripcion_id = p.id "
 		        + "WHERE a.fecha_inicio <= ? " 
 		        + "AND a.fecha_fin >= ?";
+		System.out.println(sql);
+		System.out.println(fechaInicio);
+		System.out.println(fechaFin);
 
-		    String f1 = Util.dateToIsoString(fechaInicio);
-		    String f2 = Util.dateToIsoString(fechaFin);
-		    
-		return db.executeQueryPojo(ListaActividadesDisplayDTO.class, sql, f1, f2);
+		return db.executeQueryPojo(ListaActividadesDisplayDTO.class, sql, fechaInicio, fechaFin);
 	}
 	
 	private void validateNotNull(Object obj, String message) {

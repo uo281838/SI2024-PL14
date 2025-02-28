@@ -61,7 +61,7 @@ public class ListaActividadesView {
 		contentPane.setBounds(20, 11, 622, 487);
 		frame.getContentPane().add(contentPane);
 		
-		JComboBox<Object> cbPeriodo = new JComboBox();
+		cbPeriodo = new JComboBox<>();
 		cbPeriodo.setBounds(87, 11, 103, 22);
 		contentPane.add(cbPeriodo);
 		
@@ -69,13 +69,13 @@ public class ListaActividadesView {
 		lblPeriodo.setBounds(20, 19, 67, 14);
 		contentPane.add(lblPeriodo);
 		
-		JDateChooser dcInicio = new JDateChooser();
-		dcInicio.setBounds(87, 44, 103, 20);
-		contentPane.add(dcInicio);
+		fecha1 = new JDateChooser();
+		fecha1.setBounds(87, 44, 103, 20);
+		contentPane.add(fecha1);
 		
-		JDateChooser dcFin = new JDateChooser();
-		dcFin.setBounds(87, 75, 103, 20);
-		contentPane.add(dcFin);
+		fecha2 = new JDateChooser();
+		fecha2.setBounds(87, 75, 103, 20);
+		contentPane.add(fecha2);
 		
 		JLabel lblFechaInicio = new JLabel("Fecha inicio:");
 		lblFechaInicio.setBounds(20, 50, 67, 14);
