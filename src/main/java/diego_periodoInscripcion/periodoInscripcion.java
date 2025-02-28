@@ -139,6 +139,59 @@ public class periodoInscripcion extends JFrame {
                 "Fin Socios: " + fechaFinalSocios + "\n" +
                 "Fin No Socios: " + fechaFinalNoSocios, "Éxito", JOptionPane.INFORMATION_MESSAGE);
 	}
+
+	
+	// Getters y Setter añadidos para acceso desde el controlador
+	public JPanel getContentPane() {
+		return contentPane;
+	}
+
+	public void setContentPane(JPanel contentPane) {
+		this.contentPane = contentPane;
+	}
+
+	public JTextField getTextoNombre() {
+		return textoNombre;
+	}
+
+	public void setTextoNombre(JTextField textoNombre) {
+		this.textoNombre = textoNombre;
+	}
+
+	public JTextField getTextoDescripcion() {
+		return textoDescripcion;
+	}
+
+	public void setTextoDescripcion(JTextField textoDescripcion) {
+		this.textoDescripcion = textoDescripcion;
+	}
+
+	public JDateChooser getTextoFechaInicial() {
+		return textoFechaInicial;
+	}
+
+	public void setTextoFechaInicial(JDateChooser textoFechaInicial) {
+		this.textoFechaInicial = textoFechaInicial;
+	}
+
+	public JDateChooser getTextoFechaFinalNoSocios() {
+		return textoFechaFinalNoSocios;
+	}
+
+	public void setTextoFechaFinalNoSocios(JDateChooser textoFechaFinalNoSocios) {
+		this.textoFechaFinalNoSocios = textoFechaFinalNoSocios;
+	}
+
+	public JDateChooser getTextoFechaFinal() {
+		return textoFechaFinal;
+	}
+
+	public void setTextoFechaFinal(JDateChooser textoFechaFinal) {
+		this.textoFechaFinal = textoFechaFinal;
+	}
+
+
+	
 	
 	
 }
