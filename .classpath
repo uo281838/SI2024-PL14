@@ -41,5 +41,6 @@
 	<classpathentry kind="lib" path="src/main/resources/jgoodies-looks-2.4.1.jar"/>
 	<classpathentry kind="lib" path="com.jgoodies.common_1.8.1.v20240327-0800.jar"/>
 	<classpathentry kind="lib" path="com.jgoodies.forms_1.9.0.v20240327-0800.jar"/>
+
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
