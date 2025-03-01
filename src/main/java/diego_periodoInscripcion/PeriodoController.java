@@ -10,11 +10,11 @@ import javax.swing.table.DefaultTableModel;
 
 import giis.demo.util.Util;
 
-public class ListaActividadesController {
-    private ListaActividadesModel model;
+public class PeriodoController {
+    private PeriodoModel model;
     private ListaActividadesView view;
 
-    public ListaActividadesController(ListaActividadesModel model, ListaActividadesView view) {
+    public PeriodoController(PeriodoModel model, ListaActividadesView view) {
         this.model = model;
         this.view = view;
         initController();
@@ -38,18 +38,18 @@ public class ListaActividadesController {
             return;
         }
 
-        List<periodoDTO> actividades = model.getListaCarreras(fechaInicio, fechaFin);
+        List<PeriodoDTO> actividades = model.getListaCarreras(fechaInicio, fechaFin);
         cargarTablaActividades(actividades);
     }
 
     /**
      * Carga las actividades en la tabla de la vista
      */
-    private void cargarTablaActividades(List<periodoDTO> actividades) {
+    private void cargarTablaActividades(List<PeriodoDTO> actividades) {
         DefaultTableModel model = (DefaultTableModel) view.getTablaActividades().getModel();
         model.setRowCount(0); // Limpiar tabla
 
-        for (periodoDTO actividad : actividades) {
+        for (PeriodoDTO actividad : actividades) {
             model.addRow(new Object[]{
                 actividad.getNombre(),
                 actividad.getDesc(),

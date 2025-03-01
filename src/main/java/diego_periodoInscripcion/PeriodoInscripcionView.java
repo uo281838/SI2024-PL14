@@ -18,7 +18,7 @@ import java.awt.event.ActionListener;
 import java.util.Date;
 import java.awt.event.ActionEvent;
 
-public class periodoInscripcion extends JFrame {
+public class PeriodoInscripcionView extends JFrame {
 	
 	// 
 	
@@ -37,7 +37,7 @@ public class periodoInscripcion extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					periodoInscripcion frame = new periodoInscripcion();
+					PeriodoInscripcionView frame = new PeriodoInscripcionView();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -49,7 +49,7 @@ public class periodoInscripcion extends JFrame {
 	/**
 	 * Create the frame.
 	 */
-	public periodoInscripcion() {
+	public PeriodoInscripcionView() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 582, 365);
 		contentPane = new JPanel();
