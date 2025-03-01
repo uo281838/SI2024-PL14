@@ -30,13 +30,7 @@ public class VisualizarReservasComoSocioModel {
 
 	}
 
-	public boolean existeDNI(String dni) {
-		String sql = "SELECT COUNT(*) FROM USUARIO WHERE dni = ?";
-		List<Object[]> lista = db.executeQueryArray(sql, dni);
-		int count = Integer.parseInt(lista.get(0)[0].toString());
-		return count > 0;
-
-	}
+	
 
 	public Integer getAforoInstalacion(String nombreInstalacion) {
 		String sql = "SELECT aforo_maximo FROM INSTALACION WHERE nombre = ?";
@@ -59,6 +53,8 @@ public class VisualizarReservasComoSocioModel {
 
 	}
 
+	
+	/*
 	public String getNombreSocio(String dni) {
 		String nombre = null;
 		String sql = "SELECT nombre FROM USUARIO WHERE dni = ?";
@@ -67,6 +63,8 @@ public class VisualizarReservasComoSocioModel {
 		return ((String) resultado.get(0)[0]);
 
 	}
+	
+	*/
 
 	public List<Object[]> getReservarActividades(String fecha, String instalacion) {
 		List<Object[]> resultado = new ArrayList<>();

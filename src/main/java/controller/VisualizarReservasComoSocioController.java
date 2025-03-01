@@ -50,7 +50,7 @@ public class VisualizarReservasComoSocioController {
 	public void initController() {
 
 		this.view.getBtnBuscar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> {
-			actualizarTabla(view.getTFDni().getText(), view.getFTFFecha().getText(),
+			actualizarTabla(view.getFTFFecha().getText(),
 					view.getCBInstalaciones().getSelectedItem().toString());
 			actualizarAforo(view.getCBInstalaciones().getSelectedItem().toString());
 		}));
@@ -74,21 +74,14 @@ public class VisualizarReservasComoSocioController {
 						this.view.getTFDescripcion().setText("Esta hora está disponible");
 					} else if (reservadoPor.equals("Reservado por ti")) {
 						// Obtener nombre y apellidos del usuario
-						String nombreCompleto = this.model.getNombreSocio(this.view.getTFDni().getText());
-						this.view.getTFDescripcion().setText("Reservado por " + nombreCompleto);
+						//String nombreCompleto = this.model.getNombreSocio(this.view.getTFDni().getText());
+						//this.view.getTFDescripcion().setText("Reservado por " + nombreCompleto);
 					} else if (reservadoPor.equals("Reservado")) {
 						// En este caso, la hora está reservada por otro usuario
 						this.view.getTFDescripcion().setText("Esta hora está reservada por otro usuario");
 					} else {
-						String nombreActividad = (String) this.view.getTablaReservas().getValueAt(selectedRow, 2); // Obtiene
-																													// el
-																													// nombre
-																													// de
-																													// la
-																													// actividad
-																													// de
-																													// la
-																													// columna
+						String nombreActividad = (String) this.view.getTablaReservas().getValueAt(selectedRow, 2);
+																																																					
 						mensaje = "Reservado para '" + nombreActividad + "'";
 						this.view.getTFDescripcion().setText(mensaje);
 					}
@@ -167,7 +160,7 @@ public class VisualizarReservasComoSocioController {
 	//Funcion principal de la clase , que se invoca al pulsar el boton de busqueda y que rellena la tabla con todos los parametros pasados
 	//y muestra las reservas a partir de horas en los siguientes 30 dias
 	
-	public void actualizarTabla(String dni, String fecha, String instalacion) {
+	public void actualizarTabla(String fecha, String instalacion) {
 		// Limpiar la tabla antes de mostrar nuevos datos
 		DefaultTableModel modelo = (DefaultTableModel) this.view.getTablaReservasModel();
 		modelo.setRowCount(0);
@@ -180,19 +173,6 @@ public class VisualizarReservasComoSocioController {
 			return;
 		}
 
-		// Validar que los campos no estén vacíos
-		if (dni == null || dni.trim().isEmpty()) {
-			JOptionPane.showMessageDialog(null, "Por favor, ingrese un DNI válido.", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-
-		boolean existeDNI = this.model.existeDNI(dni);
-		if (!existeDNI) {
-			JOptionPane.showMessageDialog(null, "El usuario con este DNI no existe.", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
 
 		//Muestra la fecha seleccionada en la cabecera de la tabla
 		this.view.getLblFechaTabla().setText(fecha);
@@ -246,7 +226,7 @@ public class VisualizarReservasComoSocioController {
 				String horaInicio = reserva[0].toString();
 				String dniSocio = reserva[4].toString(); // Esto es el 'dni' del socio que hizo la reserva
 				horariosReservados.add(horaInicio); // Guardar la hora reservada
-				reservadosPor.put(horaInicio, dniSocio); // Asociar la hora con el usuario que la reservó
+				reservadosPor.put(horaInicio, "Socio"); // Asociar la hora con el usuario que la reservó
 			}
 		}
 
@@ -277,14 +257,7 @@ public class VisualizarReservasComoSocioController {
 					? (reservadosPor.get(hora).equals("Actividad") ? "Actividad" : reservadosPor.get(hora))
 					: "N/A";
 
-			// Si el DNI ingresado coincide con el del usuario que reservó, mostrar
-			// "Reservado por ti"
-			if (reservadoPorUsuario.equals(dni)) {
-				reservadoPorUsuario = "Reservado por ti";
-			} else if (reservadoPorUsuario != "Actividad" && reservadoPorUsuario != "N/A") {
-				// Si está reservado por otro socio, mostrar "socio" en lugar de su DNI
-				reservadoPorUsuario = "Socio";
-			}
+			
 			
 			//Se añade la fila
 			modelo1.addRow(new Object[] { hora, estado, reservadoPorUsuario });

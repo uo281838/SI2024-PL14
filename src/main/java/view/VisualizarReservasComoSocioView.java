@@ -20,8 +20,7 @@ import javax.swing.JFormattedTextField;
 
 public class VisualizarReservasComoSocioView {
 
-	private JFrame frame;
-	private JTextField TFDni;
+	private JFrame frmVisualizarReservas;
 	private JTable TablaReservas;
 	private JTextField TFDescripcion;
 	private JLabel lblNewLabel_3;
@@ -41,7 +40,7 @@ public class VisualizarReservasComoSocioView {
 			public void run() {
 				try {
 					VisualizarReservasComoSocioView window = new VisualizarReservasComoSocioView();
-					window.frame.setVisible(true);
+					window.frmVisualizarReservas.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -51,12 +50,12 @@ public class VisualizarReservasComoSocioView {
 	
 	
 	public JFrame getFrame() {
-		return frame;
+		return frmVisualizarReservas;
 	}
 
 
 	public void setFrame(JFrame frame) {
-		this.frame = frame;
+		this.frmVisualizarReservas = frame;
 	}
 
 
@@ -123,14 +122,6 @@ public class VisualizarReservasComoSocioView {
 	
 
 
-	public JTextField getTFDni() {
-		return TFDni;
-	}
-
-
-	public void setTFDni(JTextField tFDni) {
-		TFDni = tFDni;
-	}
 
 
 	/**
@@ -203,89 +194,81 @@ public class VisualizarReservasComoSocioView {
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
-		frame = new JFrame();
-		frame.setBounds(100, 100, 623, 581);
-		frame.getContentPane().setLayout(null);
-		
-		JLabel EtiquetaIntroduceId = new JLabel("Introduce tu DNI:");
-		EtiquetaIntroduceId.setBounds(10, 10, 141, 13);
-		frame.getContentPane().add(EtiquetaIntroduceId);
-		
-		TFDni = new JTextField();
-		TFDni.setBounds(10, 33, 141, 19);
-		frame.getContentPane().add(TFDni);
-		TFDni.setColumns(10);
+		frmVisualizarReservas = new JFrame();
+		frmVisualizarReservas.setTitle("Visualizar reservas");
+		frmVisualizarReservas.setBounds(100, 100, 623, 581);
+		frmVisualizarReservas.getContentPane().setLayout(null);
 		
 		JLabel lblNewLabel = new JLabel("Instalación");
-		lblNewLabel.setBounds(184, 10, 85, 13);
-		frame.getContentPane().add(lblNewLabel);
+		lblNewLabel.setBounds(10, 10, 85, 13);
+		frmVisualizarReservas.getContentPane().add(lblNewLabel);
 		
 		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 225, 279, 280);
-		frame.getContentPane().add(scrollPane);
+		scrollPane.setBounds(10, 225, 279, 309);
+		frmVisualizarReservas.getContentPane().add(scrollPane);
 		
 		TablaReservas = new JTable();
 		scrollPane.setViewportView(TablaReservas);
 		
-		JLabel lblSeleccioneUnDia = new JLabel("Seleccione un dia:");
-		lblSeleccioneUnDia.setBounds(348, 10, 105, 13);
-		frame.getContentPane().add(lblSeleccioneUnDia);
+		JLabel lblSeleccioneUnDia = new JLabel("Seleccione un dia: (Solo se permite ver 1 mes de antelación)");
+		lblSeleccioneUnDia.setBounds(184, 10, 351, 13);
+		frmVisualizarReservas.getContentPane().add(lblSeleccioneUnDia);
 		
 		JLabel lblNewLabel_1 = new JLabel("Descripción");
 		lblNewLabel_1.setBounds(356, 152, 85, 13);
-		frame.getContentPane().add(lblNewLabel_1);
+		frmVisualizarReservas.getContentPane().add(lblNewLabel_1);
 		
 		JSeparator separator = new JSeparator();
 		separator.setBounds(10, 113, 609, 2);
-		frame.getContentPane().add(separator);
+		frmVisualizarReservas.getContentPane().add(separator);
 		
 		TFDescripcion = new JTextField();
 		TFDescripcion.setBounds(356, 175, 179, 37);
-		frame.getContentPane().add(TFDescripcion);
+		frmVisualizarReservas.getContentPane().add(TFDescripcion);
 		TFDescripcion.setColumns(10);
 		
 		lblNewLabel_3 = new JLabel("Aforo:");
 		lblNewLabel_3.setBounds(10, 162, 45, 13);
-		frame.getContentPane().add(lblNewLabel_3);
+		frmVisualizarReservas.getContentPane().add(lblNewLabel_3);
 		
 		separator_1 = new JSeparator();
 		separator_1.setOrientation(SwingConstants.VERTICAL);
-		separator_1.setBounds(306, 115, 19, 419);
-		frame.getContentPane().add(separator_1);
+		separator_1.setBounds(306, 115, 19, 429);
+		frmVisualizarReservas.getContentPane().add(separator_1);
 		
 		btnBuscar = new JButton("Buscar");
 		btnBuscar.setBounds(10, 72, 85, 21);
-		frame.getContentPane().add(btnBuscar);
+		frmVisualizarReservas.getContentPane().add(btnBuscar);
 		
 		CBInstalaciones = new JComboBox();
-		CBInstalaciones.setBounds(184, 33, 126, 19);
-		frame.getContentPane().add(CBInstalaciones);
+		CBInstalaciones.setBounds(10, 33, 126, 19);
+		frmVisualizarReservas.getContentPane().add(CBInstalaciones);
 		
 		FTFFecha = new JFormattedTextField();
 
 		
 		FTFFecha.setToolTipText("");
-		FTFFecha.setBounds(348, 33, 96, 19);
-		frame.getContentPane().add(FTFFecha);
+		FTFFecha.setBounds(184, 33, 96, 19);
+		frmVisualizarReservas.getContentPane().add(FTFFecha);
 		
 		JLabel lblNewLabel_4 = new JLabel("€/hora de la instalación:");
 		lblNewLabel_4.setBounds(10, 139, 156, 13);
-		frame.getContentPane().add(lblNewLabel_4);
+		frmVisualizarReservas.getContentPane().add(lblNewLabel_4);
 		
 		TFPrecioHora = new JLabel("");
 		TFPrecioHora.setBounds(184, 139, 85, 13);
-		frame.getContentPane().add(TFPrecioHora);
+		frmVisualizarReservas.getContentPane().add(TFPrecioHora);
 		
 		JLabel lblNewLabel_5 = new JLabel("YYYY-MM-DD");
-		lblNewLabel_5.setBounds(462, 36, 119, 13);
-		frame.getContentPane().add(lblNewLabel_5);
+		lblNewLabel_5.setBounds(306, 36, 119, 13);
+		frmVisualizarReservas.getContentPane().add(lblNewLabel_5);
 		
 		LblAforo = new JLabel("");
 		LblAforo.setBounds(70, 162, 45, 13);
-		frame.getContentPane().add(LblAforo);
+		frmVisualizarReservas.getContentPane().add(LblAforo);
 		
 		lblFechaTabla = new JLabel("");
 		lblFechaTabla.setBounds(10, 202, 171, 13);
-		frame.getContentPane().add(lblFechaTabla);
+		frmVisualizarReservas.getContentPane().add(lblFechaTabla);
 	}
 }
