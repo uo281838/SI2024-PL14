@@ -2,97 +2,104 @@ package diego_periodoInscripcion;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.Date;
 import java.util.List;
-
-import javax.swing.JOptionPane;
+import javax.swing.ComboBoxModel;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableModel;
 
+import giis.demo.util.ApplicationException;
+import giis.demo.util.SwingUtil;
 import giis.demo.util.Util;
 
 public class PeriodoController {
     private PeriodoModel model;
-    private ListaActividadesView view;
+    private PeriodoView view;
+    private String lastSelectedKey = ""; // Guarda la última clave seleccionada
 
-    public PeriodoController(PeriodoModel model, ListaActividadesView view) {
+    public PeriodoController(PeriodoModel model, PeriodoView view) {
         this.model = model;
         this.view = view;
-        initController();
+        this.initView();
     }
 
-    private void initController() {
-        // Agrega los eventos a los componentes de la vista
-        view.getListaPeriodo().addActionListener(e -> cargarFechasDesdePeriodo());
-        view.getTablaActividades().setModel(new DefaultTableModel(new Object[]{"Nombre", "Descripción", "Instalación", "Precio Socio", "Precio No Socio", "Periodo", "Inicio", "Fin"}, 0));
+    public void initController() {
+        view.getBtnGuardar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> guardarPeriodo()));
+        view.getBtnMostrar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> getListaPeriodos()));
+
+        view.getTablaPeriodos().addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseReleased(java.awt.event.MouseEvent e) {
+                SwingUtil.exceptionWrapper(() -> updateDetail());
+            }
+        });
     }
 
-    /**
-     * Método para obtener la lista de actividades en el periodo seleccionado
-     */
-    public void obtenerActividades() {
-        Date fechaInicio = view.fechaInicio().getDate();
-        Date fechaFin = view.fechaFin().getDate();
-
-        if (fechaInicio == null || fechaFin == null) {
-            JOptionPane.showMessageDialog(view.getFrame(), "Debe seleccionar ambas fechas", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        List<PeriodoDTO> actividades = model.getListaCarreras(fechaInicio, fechaFin);
-        cargarTablaActividades(actividades);
+    public void initView() {
+        getListaPeriodos();
+        view.getFrame().setVisible(true);
     }
 
     /**
-     * Carga las actividades en la tabla de la vista
+     * Guarda un nuevo período en la base de datos.
      */
-    private void cargarTablaActividades(List<PeriodoDTO> actividades) {
-        DefaultTableModel model = (DefaultTableModel) view.getTablaActividades().getModel();
-        model.setRowCount(0); // Limpiar tabla
+    public void guardarPeriodo() {
+        try {
+            String nombre = view.getNombreField().getText();
+            String descripcion = view.getDescripcionField().getText();
+            String fechaInicio = Util.dateToIsoString(view.getFechaInicioChooser().getDate());
+            String fechaFin = Util.dateToIsoString(view.getFechaFinChooser().getDate());
+            String fechaFinNoSocios = Util.dateToIsoString(view.getFechaFinNoSociosChooser().getDate());
 
-        for (PeriodoDTO actividad : actividades) {
-            model.addRow(new Object[]{
-                actividad.getNombre(),
-                actividad.getDesc(),
-                actividad.getInst(),
-                actividad.getPrecio_s(),
-                actividad.getPrecio_n(),
-                actividad.getPeriodo(),
-                actividad.getFinicio(),
-                actividad.getFfin()
-            });
+            if (nombre.isEmpty() || descripcion.isEmpty() || fechaInicio == null || fechaFin == null || fechaFinNoSocios == null) {
+                throw new ApplicationException("Todos los campos deben estar completos.");
+            }
+
+            model.guardarPeriodo(nombre, descripcion, fechaInicio, fechaFin, fechaFinNoSocios);
+            view.mostrarMensaje("Período guardado correctamente.");
+            getListaPeriodos();
+        } catch (ApplicationException ex) {
+            view.mostrarError(ex.getMessage());
         }
     }
 
     /**
-     * Carga automáticamente las fechas cuando se elige un período en el ComboBox
+     * Obtiene la lista de períodos desde el modelo y la muestra en la vista.
      */
-    private void cargarFechasDesdePeriodo() {
-        String periodoSeleccionado = (String) view.getListaPeriodo().getSelectedItem();
-        if (periodoSeleccionado == null) return;
+    public void getListaPeriodos() {
+        List<PeriodoDisplayDTO> periodos = model.getListaPeriodos();
+        TableModel tmodel = SwingUtil.getTableModelFromPojos(periodos, new String[]{"id", "nombre", "descripcion", "fechaInicio", "fechaFin", "fechaFinNoSocios"});
+        view.getTablaPeriodos().setModel(tmodel);
+        SwingUtil.autoAdjustColumns(view.getTablaPeriodos());
 
-        Date fechaInicio = null;
-        Date fechaFin = null;
+        restoreDetail();
 
-        switch (periodoSeleccionado) {
-            case "Enero":
-                fechaInicio = Util.isoStringToDate("2024-01-01");
-                fechaFin = Util.isoStringToDate("2024-01-31");
-                break;
-            case "Junio":
-                fechaInicio = Util.isoStringToDate("2024-06-01");
-                fechaFin = Util.isoStringToDate("2024-06-30");
-                break;
-            case "Septiembre":
-                fechaInicio = Util.isoStringToDate("2024-09-01");
-                fechaFin = Util.isoStringToDate("2024-09-30");
-                break;
-            default:
-                JOptionPane.showMessageDialog(view.getFrame(), "Periodo no válido", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
+        List<Object[]> periodosList = model.getListaPeriodosArray();
+        ComboBoxModel<Object> lmodel = SwingUtil.getComboModelFromList(periodosList);
+        view.getListaPeriodos().setModel(lmodel);
+    }
+
+    /**
+     * Restaura la selección de detalles en la tabla.
+     */
+    public void restoreDetail() {
+        this.lastSelectedKey = SwingUtil.selectAndGetSelectedKey(view.getTablaPeriodos(), this.lastSelectedKey);
+        if ("".equals(this.lastSelectedKey)) {
+            view.getDetallePeriodo().setModel(new DefaultTableModel());
+        } else {
+            this.updateDetail();
         }
+    }
 
-        view.setFechaInicio(fechaInicio);
-        view.setFechaFin(fechaFin);
-        obtenerActividades();
+    /**
+     * Actualiza la vista con los detalles del período seleccionado.
+     */
+    public void updateDetail() {
+        this.lastSelectedKey = SwingUtil.getSelectedKey(view.getTablaPeriodos());
+        int idPeriodo = Integer.parseInt(this.lastSelectedKey);
+
+        PeriodoEntity periodo = model.getPeriodo(idPeriodo);
+        TableModel tmodel = SwingUtil.getRecordModelFromPojo(periodo, new String[]{"id", "nombre", "descripcion", "fechaInicio", "fechaFin", "fechaFinNoSocios"});
+        view.getDetallePeriodo().setModel(tmodel);
+        SwingUtil.autoAdjustColumns(view.getDetallePeriodo());
     }
 }

@@ -1,45 +1,50 @@
 package diego_periodoInscripcion;
 
-import java.util.Date;
 import java.util.List;
-
-import giis.demo.util.ApplicationException;
 import giis.demo.util.Database;
+import giis.demo.util.ApplicationException;
 import giis.demo.util.Util;
 
 public class PeriodoModel {
+    private Database db = new Database();
 
-	private static final String MSG_Nombre = "Introduzca nombre período";
-	private static final String MSG_Fechas_No_Validas = "Introduzca fecha valida";
+    /**
+     * Guarda un nuevo período en la base de datos.
+     */
+    public void guardarPeriodo(String nombre, String descripcion, String fechaInicio, String fechaFin, String fechaFinNoSocios) {
+        if (nombre == null || nombre.isEmpty() || fechaInicio == null || fechaFin == null || fechaFinNoSocios == null) {
+            throw new ApplicationException("Todos los campos deben estar completos.");
+        }
 
-	private Database db = new Database();
+        String sql = "INSERT INTO PERIODO (nombre, descripcion, fecha_inicio, fecha_fin, fecha_fin_no_socios) VALUES (?, ?, ?, ?, ?)";
+        db.executeUpdate(sql, nombre, descripcion, fechaInicio, fechaFin, fechaFinNoSocios);
+    }
 
-	public void crearPeriodo(String nombre, String descripcion, Date fechaInicio, Date fechaFinal,
-			Date fechaFinNoSocios) {
-		validateNotNull(nombre, MSG_Nombre);
-		validateNotNull(fechaInicio, MSG_Fechas_No_Validas);
-		validateNotNull(fechaFinal, MSG_Fechas_No_Validas);
-		validateNotNull(fechaFinNoSocios, MSG_Fechas_No_Validas);
+    /**
+     * Obtiene la lista de períodos desde la base de datos.
+     */
+    public List<PeriodoDisplayDTO> getListaPeriodos() {
+        String sql = "SELECT id, nombre, descripcion, fecha_inicio, fecha_fin, fecha_fin_no_socios FROM PERIODO";
+        return db.executeQueryPojo(PeriodoDisplayDTO.class, sql);
+    }
 
-		String sql = "INSERT INTO PERIODO (nombre, descripcion, fecha_inicio, fecha_fin, fecha_fin_no_socios) VALUES (?, ?, ?, ?, ?)";
+    /**
+     * Obtiene la lista de períodos en formato de array para usar en ComboBox.
+     */
+    public List<Object[]> getListaPeriodosArray() {
+        String sql = "SELECT id, nombre FROM PERIODO";
+        return db.executeQueryArray(sql);
+    }
 
-		String f1 = Util.dateToIsoString(fechaInicio);
-		String f2 = Util.dateToIsoString(fechaFinal);
-		String f3 = Util.dateToIsoString(fechaFinNoSocios);
-
-		db.executeUpdate(sql, nombre, descripcion, f1, f2, f3);
-
-	}
-
-	public List<PeriodoDisplayDTO> obtenerPeriodos() {
-		String sql = "SELECT id, nombre, descripcion, fecha_inicio, fecha_fin, fecha_fin_no_socios FROM PERIODO";
-		return db.executeQueryPojo(PeriodoDisplayDTO.class, sql);
-	}
-
-	private void validateNotNull(Object obj, String message) {
-		if (obj == null) {
-			throw new ApplicationException(message);
-		}
-	}
-
+    /**
+     * Obtiene un período específico según su ID.
+     */
+    public PeriodoEntity getPeriodo(int idPeriodo) {
+        String sql = "SELECT id, nombre, descripcion, fecha_inicio, fecha_fin, fecha_fin_no_socios FROM PERIODO WHERE id = ?";
+        List<PeriodoEntity> resultados = db.executeQueryPojo(PeriodoEntity.class, sql, idPeriodo);
+        if (resultados.isEmpty()) {
+            throw new ApplicationException("No se encontró el período con ID: " + idPeriodo);
+        }
+        return resultados.get(0);
+    }
 }
