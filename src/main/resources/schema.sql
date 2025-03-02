@@ -53,6 +53,7 @@ CREATE TABLE RESERVA_INSTALACION (
 CREATE TABLE PERIODO_INSCRIPCION (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     nombre TEXT NOT NULL,
+    descripcion TEXT NOT NULL,
     fecha_inicio_socios DATE NOT NULL,
     fecha_fin_socios DATE NOT NULL,
     fecha_fin_no_socios DATE NOT NULL
