@@ -26,14 +26,14 @@ public class ListaActividadesController {
 	public void initView() {
 		//Inicializa la fecha de hoy a un valor que permitira mostrar carreras en diferentes fases 
 		//y actualiza los datos de la vista
-		
+	    cargarPeriodosEnComboBox();
 		//Abre la ventana (sustituye al main generado por WindowBuilder)
 		view.getFrame().setVisible(true); 
 	}
 
     public void initController() {
         // Agrega los eventos a los componentes de la vista
-        view.getListaPeriodo().addActionListener(e -> cargarFechasDesdePeriodo());
+        view.getListaPeriodo().addActionListener(e -> actualizarFechasDesdePeriodo());
         view.getTablaActividades().setModel(new DefaultTableModel(new Object[]{"Nombre", "Descripción", "Instalación", "Precio Socio", "Precio No Socio", "Periodo", "Inicio", "Fin"}, 0));
    
         PropertyChangeListener fechaListener = new PropertyChangeListener() {
@@ -48,7 +48,29 @@ public class ListaActividadesController {
         view.fechaInicio().getDateEditor().addPropertyChangeListener("date", fechaListener);
         view.fechaFin().getDateEditor().addPropertyChangeListener("date", fechaListener);
     }
+
+    private void cargarPeriodosEnComboBox() {
+    	List<PeriodoDTO> periodos = model.getPeriodos();
+    	view.getListaPeriodo().removeAllItems();
+    	for (PeriodoDTO periodo : periodos) {
+    		view.getListaPeriodo().addItem(periodo.getNombre());
+    }
+}
+    private void actualizarFechasDesdePeriodo() {
+        String nombrePeriodo = (String) view.getListaPeriodo().getSelectedItem();
+        if (nombrePeriodo == null) return;
+
+        List<PeriodoDTO> periodos = model.getPeriodos();
+        for (PeriodoDTO periodo : periodos) {
+            if (periodo.getNombre().equals(nombrePeriodo)) {
+                view.setFechaInicio(Util.isoStringToDate(periodo.getFecha_inicio()));
+                view.setFechaFin(Util.isoStringToDate(periodo.getFecha_fin()));
+                break;
+            }
+        }
+    }
    
+    
 
     /**
      * Método para obtener la lista de actividades en el periodo seleccionado
@@ -72,22 +94,36 @@ public class ListaActividadesController {
     private void actualizarTabla() {
         Date fechaInicio = view.fechaInicio().getDate();
         Date fechaFin = view.fechaFin().getDate();
-        
-        String fechaInicioStr = formatDate(fechaInicio);
-        String fechaFinStr = formatDate(fechaFin);
 
-        // Validar que ambas fechas estén seleccionadas antes de actualizar la tabla
         if (fechaInicio == null || fechaFin == null) {
             return;
         }
 
-        // Obtener datos del modelo
+        // Convertimos las fechas a string en formato ISO
+        String fechaInicioStr = formatDate(fechaInicio);
+        String fechaFinStr = formatDate(fechaFin);
+
+        // Obtener los datos del modelo
         List<ListaActividadesDisplayDTO> actividades = model.getListaActividades(fechaInicioStr, fechaFinStr);
 
-        // Actualizar la tabla con los datos obtenidos
-        DefaultTableModel tableModel = new DefaultTableModel();
-        tableModel.setColumnIdentifiers(new Object[]{"Nombre", "Descripción", "Instalación", "Precio Socio", "Precio No Socio", "Periodo", "Inicio", "Fin"});
+        // Verificar si la lista tiene datos
+        if (actividades == null || actividades.isEmpty()) {
+            System.out.println("No se encontraron actividades para el rango de fechas seleccionado.");
+            return;
+        }
 
+        // Debug: Imprimir los datos obtenidos
+        for (ListaActividadesDisplayDTO actividad : actividades) {
+            System.out.println("Actividad obtenida: " + actividad.getNombre() + " - " + actividad.getPeriodo());
+        }
+
+        // Crear un nuevo modelo de tabla
+        DefaultTableModel tableModel = new DefaultTableModel();
+        tableModel.setColumnIdentifiers(new Object[]{
+            "Nombre", "Descripción", "Instalación", "Precio Socio", "Precio No Socio", "Periodo", "Inicio", "Fin"
+        });
+
+        // Llenar la tabla con los datos
         for (ListaActividadesDisplayDTO actividad : actividades) {
             tableModel.addRow(new Object[]{
                 actividad.getNombre(),
@@ -101,8 +137,12 @@ public class ListaActividadesController {
             });
         }
 
-        // Asignar el modelo a la tabla en la vista
+        // Asignar el modelo actualizado a la tabla en la vista
         view.getTablaActividades().setModel(tableModel);
+        
+        // Refrescar la vista
+        view.getTablaActividades().revalidate();
+        view.getTablaActividades().repaint();
     }
 
     /**
@@ -126,38 +166,7 @@ public class ListaActividadesController {
         }
     }
 
-    /**
-     * Carga automáticamente las fechas cuando se elige un período en el ComboBox
-     */
-    private void cargarFechasDesdePeriodo() {
-        String periodoSeleccionado = (String) view.getListaPeriodo().getSelectedItem();
-        if (periodoSeleccionado == null) return;
-
-        Date fechaInicio = null;
-        Date fechaFin = null;
-
-        switch (periodoSeleccionado) {
-            case "Enero":
-                fechaInicio = Util.isoStringToDate("2024-01-01");
-                fechaFin = Util.isoStringToDate("2024-01-31");
-                break;
-            case "Junio":
-                fechaInicio = Util.isoStringToDate("2024-06-01");
-                fechaFin = Util.isoStringToDate("2024-06-30");
-                break;
-            case "Septiembre":
-                fechaInicio = Util.isoStringToDate("2024-09-01");
-                fechaFin = Util.isoStringToDate("2024-09-30");
-                break;
-            default:
-                JOptionPane.showMessageDialog(view.getFrame(), "Periodo no válido", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-        }
-
-        view.setFechaInicio(fechaInicio);
-        view.setFechaFin(fechaFin);
-        obtenerActividades();
-    }
+    
 
     private String formatDate(Date date) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
