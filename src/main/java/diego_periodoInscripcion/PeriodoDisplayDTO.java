@@ -3,14 +3,28 @@ package diego_periodoInscripcion;
 import java.util.Date;
 
 public class PeriodoDisplayDTO {
+	
+	// Declaramos variables
     private int id;
     private String nombre;
     private String descripcion;
     private Date fechaInicio;
     private Date fechaFin;
     private Date fechaFinNoSocios;
-
-    // Getters y Setters
+    
+    // Constructor
+    public PeriodoDisplayDTO() {};
+    
+    public PeriodoDisplayDTO(int id, String nombre, String descripcion, Date fechaInicio, Date fechaFin,
+			Date fechaFinNoSocios) {
+		this.id = id;
+		this.nombre = nombre;
+		this.descripcion = descripcion;
+		this.fechaInicio = fechaInicio;
+		this.fechaFin = fechaFin;
+		this.fechaFinNoSocios = fechaFinNoSocios;
+	}
+	// Getters y Setters
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
