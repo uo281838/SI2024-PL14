@@ -3,6 +3,7 @@ package controller;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,9 +20,12 @@ import model.VisualizarReservasComoSocioModel;
 import view.VisualizarReservasComoSocioView;
 
 public class VisualizarReservasComoSocioController {
+	
+	private int horasMaximasConsecutivas;
 
 	private VisualizarReservasComoSocioModel model;
 	private VisualizarReservasComoSocioView view;
+	private int idsocio = 1;
 
 	public VisualizarReservasComoSocioController(VisualizarReservasComoSocioModel m,
 			VisualizarReservasComoSocioView v) {
@@ -48,6 +52,10 @@ public class VisualizarReservasComoSocioController {
 	
 
 	public void initController() {
+		
+		
+		this.view.getTablaReservas().setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+
 
 		this.view.getBtnBuscar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> {
 			actualizarTabla(view.getFTFFecha().getText(),
@@ -59,8 +67,19 @@ public class VisualizarReservasComoSocioController {
 		this.view.getTablaReservas().getSelectionModel().addListSelectionListener(e -> {
 			// Verifica si una fila está seleccionada
 			if (!e.getValueIsAdjusting()) {
-				int selectedRow = this.view.getTablaReservas().getSelectedRow();
-				System.out.println(selectedRow);
+				//int selectedRow = this.view.getTablaReservas().getSelectedRow();
+				int[] selectedRows = this.view.getTablaReservas().getSelectedRows();
+				
+				for (int selectedRow : selectedRows) {
+				    String estado = (String) this.view.getTablaReservas().getValueAt(selectedRow, 1);
+				    if (!estado.equals("Disponible")) {
+				        JOptionPane.showMessageDialog(null, "Una o más horas seleccionadas ya están reservadas.", "Error", JOptionPane.ERROR_MESSAGE);
+				        return;
+				    }
+				}
+							
+				
+				/*
 
 				if (selectedRow != -1) { // Si se ha seleccionado una fila
 
@@ -86,8 +105,39 @@ public class VisualizarReservasComoSocioController {
 						this.view.getTFDescripcion().setText(mensaje);
 					}
 				}
+				*/
 			}
+			
 		});
+		
+		
+		this.view.getBtnReservar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> {
+		    int[] selectedRows = this.view.getTablaReservas().getSelectedRows();
+		    if (selectedRows.length == 0) {
+		        JOptionPane.showMessageDialog(null, "Por favor, seleccione al menos una hora para reservar.", "Error", JOptionPane.ERROR_MESSAGE);
+		        return;
+		    }
+
+		    List<String> horasSeleccionadas = new ArrayList<>();
+		    for (int row : selectedRows) {
+		        horasSeleccionadas.add(this.view.getTablaReservas().getValueAt(row, 0).toString());
+		    }
+
+		    //String dniSocio = this.view.getTFDni().getText();
+		    String fecha = this.view.getFTFFecha().getText();
+		    String instalacion = this.view.getCBInstalaciones().getSelectedItem().toString();
+		   
+
+		    this.model.reservarHoras(idsocio, fecha, instalacion, horasSeleccionadas);
+
+		    JOptionPane.showMessageDialog(null, "Reserva realizada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+		    // Refrescar la tabla después de hacer la reserva
+		    actualizarTabla(fecha, instalacion);
+		}));
+
+		
+		
 
 	}
 
@@ -154,6 +204,9 @@ public class VisualizarReservasComoSocioController {
 					JOptionPane.ERROR_MESSAGE);
 		}
 	}
+	
+	
+
 
 	
 	

@@ -29,6 +29,15 @@ public class VisualizarReservasComoSocioModel {
 		return db.executeQueryArray(sql, null);
 
 	}
+	
+	
+	
+	public void reservarHoras(int idSocio, String fecha, String instalacion, List<String> horasSeleccionadas) {
+	    for (String hora : horasSeleccionadas) {
+	        String sql = "INSERT INTO reservas (usuarioid, fecha, instalacion, hora) VALUES (?, ?, ?, ?)";
+	        db.executeUpdate(sql, idSocio, fecha, instalacion, hora);
+	    }
+	}
 
 	
 
