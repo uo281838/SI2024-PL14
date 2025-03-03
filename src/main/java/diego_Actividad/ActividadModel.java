@@ -1,6 +1,8 @@
 package diego_Actividad;
 
 import java.util.List;
+
+import diego_periodoInscripcion.PeriodoEntity;
 import giis.demo.util.Database;
 import giis.demo.util.ApplicationException;
 
@@ -56,5 +58,28 @@ public class ActividadModel {
         }
         return resultados.get(0);
     }
+    
+    // Obtener Id Periodo
+    public PeriodoEntity getPeriodoInscripcion(int idPeriodoInscripcion) {
+        // SQL para obtener el periodo de inscripción por ID
+        String sql = "SELECT id, nombre, descripcion, fecha_inicio, fecha_fin, cuota FROM PERIODO_INSCRIPCION WHERE id = ?";
+        
+        // Ejecutar la consulta y mapear el resultado a una lista de PeriodoInscripcionEntity
+        List<PeriodoEntity> resultados = db.executeQueryPojo(PeriodoEntity.class, sql, idPeriodoInscripcion);
+        
+        // Si no hay resultados, lanzamos una excepción
+        if (resultados.isEmpty()) {
+            throw new ApplicationException("No se encontró el periodo de inscripción con ID: " + idPeriodoInscripcion);
+        }
+        
+        // Si hay resultados, devolver el primer resultado (en este caso debería haber solo uno)
+        return resultados.get(0);
+    }
+    
+    public List<Object[]> getListaPeriodosInscripcionArray() {
+        String sql = "SELECT id, nombre FROM PERIODO_INSCRIPCION";
+        return db.executeQueryArray(sql);
+    }
+
 }
 
