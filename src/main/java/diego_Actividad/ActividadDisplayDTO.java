@@ -1,74 +1,147 @@
 package diego_Actividad;
 
+import java.util.Date;
+
 public class ActividadDisplayDTO {
 
-	// Declaramos variables
-	private String nombre;
-	private String tipo;
-	private int aforo;
-	private String dias;
-	private double cuotaSocios;
-	private double cuotaNoSocios;
+    // Declaramos variables
+    private int id;
+    private String nombre;
+    private String descripcion;
+    private int instalacionId;
+    private int aforoMaximo;
+    private double costeSocio;
+    private double costeNoSocio;
+    private Date fechaInicio;
+    private Date fechaFin;
+    private String dias;
+    private String horaInicio;
+    private String horaFin;
+    private int periodoInscripcionId;
 
-	// Constructor
-	public ActividadDisplayDTO() {};
-	
-	public ActividadDisplayDTO(String nombre, String tipo, int aforo, String dias, double cuotaSocios,
-			double cuotaNoSocios) {
-		this.nombre = nombre;
-		this.tipo = tipo;
-		this.aforo = aforo;
-		this.dias = dias;
-		this.cuotaSocios = cuotaSocios;
-		this.cuotaNoSocios = cuotaNoSocios;
-	}
+    // Constructor
+    public ActividadDisplayDTO() {}
 
-	// Getters y Setters
-	public String getNombre() {
-		return nombre;
-	}
+    public ActividadDisplayDTO(int id, String nombre, String descripcion, int instalacionId, int aforoMaximo,
+            double costeSocio, double costeNoSocio, Date fechaInicio, Date fechaFin, String dias, String horaInicio,
+            String horaFin, int periodoInscripcionId) {
+        this.id = id;
+        this.nombre = nombre;
+        this.descripcion = descripcion;
+        this.instalacionId = instalacionId;
+        this.aforoMaximo = aforoMaximo;
+        this.costeSocio = costeSocio;
+        this.costeNoSocio = costeNoSocio;
+        this.fechaInicio = fechaInicio;
+        this.fechaFin = fechaFin;
+        this.dias = dias;
+        this.horaInicio = horaInicio;
+        this.horaFin = horaFin;
+        this.periodoInscripcionId = periodoInscripcionId;
+    }
 
-	public void setNombre(String nombre) {
-		this.nombre = nombre;
-	}
+    // Getters y Setters
+    public int getId() {
+        return id;
+    }
 
-	public String getTipo() {
-		return tipo;
-	}
+    public void setId(int id) {
+        this.id = id;
+    }
 
-	public void setTipo(String tipo) {
-		this.tipo = tipo;
-	}
+    public String getNombre() {
+        return nombre;
+    }
 
-	public int getAforo() {
-		return aforo;
-	}
+    public void setNombre(String nombre) {
+        this.nombre = nombre;
+    }
 
-	public void setAforo(int aforo) {
-		this.aforo = aforo;
-	}
+    public String getDescripcion() {
+        return descripcion;
+    }
 
-	public String getDias() {
-		return dias;
-	}
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
+    }
 
-	public void setDias(String dias) {
-		this.dias = dias;
-	}
+    public int getInstalacionId() {
+        return instalacionId;
+    }
 
-	public double getCuotaSocios() {
-		return cuotaSocios;
-	}
+    public void setInstalacionId(int instalacionId) {
+        this.instalacionId = instalacionId;
+    }
 
-	public void setCuotaSocios(double cuotaSocios) {
-		this.cuotaSocios = cuotaSocios;
-	}
+    public int getAforoMaximo() {
+        return aforoMaximo;
+    }
 
-	public double getCuotaNoSocios() {
-		return cuotaNoSocios;
-	}
+    public void setAforoMaximo(int aforoMaximo) {
+        this.aforoMaximo = aforoMaximo;
+    }
 
-	public void setCuotaNoSocios(double cuotaNoSocios) {
-		this.cuotaNoSocios = cuotaNoSocios;
-	}
+    public double getCosteSocio() {
+        return costeSocio;
+    }
+
+    public void setCosteSocio(double costeSocio) {
+        this.costeSocio = costeSocio;
+    }
+
+    public double getCosteNoSocio() {
+        return costeNoSocio;
+    }
+
+    public void setCosteNoSocio(double costeNoSocio) {
+        this.costeNoSocio = costeNoSocio;
+    }
+
+    public Date getFechaInicio() {
+        return fechaInicio;
+    }
+
+    public void setFechaInicio(Date fechaInicio) {
+        this.fechaInicio = fechaInicio;
+    }
+
+    public Date getFechaFin() {
+        return fechaFin;
+    }
+
+    public void setFechaFin(Date fechaFin) {
+        this.fechaFin = fechaFin;
+    }
+
+    public String getDias() {
+        return dias;
+    }
+
+    public void setDias(String dias) {
+        this.dias = dias;
+    }
+
+    public String getHoraInicio() {
+        return horaInicio;
+    }
+
+    public void setHoraInicio(String horaInicio) {
+        this.horaInicio = horaInicio;
+    }
+
+    public String getHoraFin() {
+        return horaFin;
+    }
+
+    public void setHoraFin(String horaFin) {
+        this.horaFin = horaFin;
+    }
+
+    public int getPeriodoInscripcionId() {
+        return periodoInscripcionId;
+    }
+
+    public void setPeriodoInscripcionId(int periodoInscripcionId) {
+        this.periodoInscripcionId = periodoInscripcionId;
+    }
 }
