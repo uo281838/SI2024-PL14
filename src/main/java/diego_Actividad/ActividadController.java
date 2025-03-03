@@ -7,6 +7,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
+import diego_periodoInscripcion.PeriodoEntity;
 import giis.demo.util.ApplicationException;
 import giis.demo.util.SwingUtil;
 import giis.demo.util.Util;
@@ -32,6 +33,14 @@ public class ActividadController {
                 SwingUtil.exceptionWrapper(() -> updateDetail());
             }
         });
+        
+        // Agregar el ActionListener para el ComboBox de períodos de inscripción
+        view.getListaPeriodosInscripcion().addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                SwingUtil.exceptionWrapper(() -> actualizarPeriodoInscripcion());
+            }
+        });
     }
 
     public void initView() {
@@ -55,7 +64,12 @@ public class ActividadController {
             String dias = view.getDiasField().getText();
             String horaInicio = view.getHoraInicioField().getText();
             String horaFin = view.getHoraFinField().getText();
-            int periodoInscripcionId = Integer.parseInt(view.getPeriodoInscripcionField().getText());
+            
+            // Obtener id periodo
+            Object selectedItem = view.getListaPeriodosInscripcion().getSelectedItem();
+            int periodoInscripcionId = 0;
+            Object[] selectedPeriodo = (Object[]) selectedItem;
+            periodoInscripcionId = (int) selectedPeriodo[0];
 
             if (nombre.isEmpty() || descripcion.isEmpty() || fechaInicio == null || fechaFin == null || dias.isEmpty() || horaInicio.isEmpty() || horaFin.isEmpty()) {
                 throw new ApplicationException("Todos los campos deben estar completos.");
@@ -109,5 +123,33 @@ public class ActividadController {
         view.getDetalleActividad().setModel(tmodel);
         SwingUtil.autoAdjustColumns(view.getDetalleActividad());
     }
+    
+    /**
+     * Actualiza la información del periodo de inscripción basado en la selección del ComboBox.
+     */
+    public void actualizarPeriodoInscripcion() {
+        // Obtener el objeto seleccionado en el ComboBox
+        Object selectedItem = view.getListaPeriodosInscripcion().getSelectedItem();
+
+        // Verificar que el item seleccionado no sea nulo y sea un array (id, nombre)
+        if (selectedItem != null && selectedItem instanceof Object[]) {
+            Object[] selectedPeriodo = (Object[]) selectedItem;
+            int idPeriodoInscripcion = (int) selectedPeriodo[0];  // El primer elemento es el ID del periodo
+
+            // Usar el ID para obtener el periodo de inscripción completo
+            PeriodoEntity periodoInscripcion = model.getPeriodoInscripcion(idPeriodoInscripcion);
+
+        }
+    }
+    
+ // Obtiene la lista de períodos de inscripción y los muestra en el ComboBox
+    public void cargarListaPeriodosInscripcion() {
+        List<Object[]> periodosInscripcion = model.getListaPeriodosInscripcionArray(); // Método similar a getListaPeriodosArray
+        ComboBoxModel<Object> lmodel = SwingUtil.getComboModelFromList(periodosInscripcion);
+        view.getListaPeriodosInscripcion().setModel(lmodel);
+    }
+
+    
+    
 }
 
