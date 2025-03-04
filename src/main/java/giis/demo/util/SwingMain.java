@@ -86,7 +86,7 @@ public class SwingMain {
 		});
 		frame.getContentPane().add(btnCargarDatosIniciales);
 		
-		JButton btnVisualizarReservasComoSocio = new JButton("Ver reservas como socio");
+		JButton btnVisualizarReservasComoSocio = new JButton("Visualizar/Reservar instalaciones como socio");
 		btnVisualizarReservasComoSocio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
