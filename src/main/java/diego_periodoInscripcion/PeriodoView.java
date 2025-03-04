@@ -76,9 +76,7 @@ public class PeriodoView {
 		return txtNombre;
 	}
 
-	public JTextField getDescripcionField() {
-		return txtDescripcion;
-	}
+
 
 	public JDateChooser getFechaInicioChooser() {
 		return dateInicio;
