@@ -55,10 +55,10 @@ public class ReservaInstalacionModel {
 
 
         
-        System.out.print(sql);
-        System.out.println();
-        System.out.print(idInstalacion);
-        System.out.println();
+   //     System.out.print(sql);
+     //   System.out.println();
+      //  System.out.print(idInstalacion);
+      // System.out.println();
 
         return db.executeQueryPojo(ReservaInstalacionDTO.class, sql);
     }
