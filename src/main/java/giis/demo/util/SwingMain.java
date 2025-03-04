@@ -2,9 +2,7 @@ package giis.demo.util;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
-
 import controller.VisualizarReservasComoSocioController;
-
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
@@ -12,6 +10,15 @@ import java.awt.event.ActionEvent;
 import giis.demo.tkrun.*;
 import model.VisualizarReservasComoSocioModel;
 import view.VisualizarReservasComoSocioView;
+import diego_Actividad.*;
+import diego_periodoInscripcion.*;
+import unai.lista_actividades.*;
+import unai.ver_reservas.*;
+
+import model.VisualizarReservasComoSocioModel;
+import view.VisualizarReservasComoSocioView;
+
+
 
 /**
  * Punto de entrada principal que incluye botones para la ejecucion de las pantallas 
@@ -53,9 +60,9 @@ public class SwingMain {
 	private void initialize() {
 		frame = new JFrame();
 		frame.setTitle("Main");
-		frame.setBounds(0, 0, 287, 185);
+		frame.setBounds(0, 0, 327, 324);
 		frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
-		
+		/*
 		JButton btnEjecutarTkrun = new JButton("Ejecutar giis.demo.tkrun");
 		btnEjecutarTkrun.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
 			public void actionPerformed(ActionEvent e) {
@@ -65,6 +72,10 @@ public class SwingMain {
 		});
 		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
 		frame.getContentPane().add(btnEjecutarTkrun);
+*/		
+		frame.getContentPane().setLayout(new BoxLayout(frame.getContentPane(), BoxLayout.Y_AXIS));
+
+
 		
 			
 		JButton btnInicializarBaseDeDatos = new JButton("Inicializar Base de Datos en Blanco");
@@ -86,6 +97,7 @@ public class SwingMain {
 		});
 		frame.getContentPane().add(btnCargarDatosIniciales);
 		
+
 		JButton btnVisualizarReservasComoSocio = new JButton("Visualizar/Reservar instalaciones como socio");
 		btnVisualizarReservasComoSocio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -98,15 +110,58 @@ public class SwingMain {
 		
 		
 		
+
+		JButton btnActividades = new JButton("Añadir actividades");
+		btnActividades.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
+			public void actionPerformed(ActionEvent e) {
+				ActividadController controller=new ActividadController(new ActividadModel(), new ActividadView());
+				controller.initController();
+			}
+		});
+		frame.getContentPane().add(btnActividades);
+		
+		JButton btnPeriodoInscripcion = new JButton("Añadir periodo de inscripcion");
+		btnPeriodoInscripcion.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
+			public void actionPerformed(ActionEvent e) {
+				PeriodoController controller=new PeriodoController(new PeriodoModel(), new PeriodoView());
+				controller.initController();
+			}
+		});
+		frame.getContentPane().add(btnPeriodoInscripcion);
+		
+		JButton btnVerListaActividades = new JButton("Ver lista de actividades");
+		btnVerListaActividades.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
+			public void actionPerformed(ActionEvent e) {
+				ListaActividadesController controller=new ListaActividadesController(new ListaActividadesModel(), new ListaActividadesView());
+				controller.initController();
+			}
+		});
+		frame.getContentPane().add(btnVerListaActividades);
+		
+		JButton btnReservasInstalacion = new JButton("Ver reservas de una instalacion");
+		btnReservasInstalacion.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
+			public void actionPerformed(ActionEvent e) {
+				ReservaInstalacionController controller=new ReservaInstalacionController(new ReservaInstalacionModel(), new ReservaInstalacionView());
+				controller.initController();
+			}
+		});
+		frame.getContentPane().add(btnReservasInstalacion);
+
+		/*
+		JButton btnVisualizarReservasComoSocio = new JButton("Ver reservas como socio");
+		btnVisualizarReservasComoSocio.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				VisualizarReservasComoSocioController controller = new VisualizarReservasComoSocioController(new VisualizarReservasComoSocioModel(),new VisualizarReservasComoSocioView());
+				controller.initController();
+			}
+		});
+		frame.getContentPane().add(btnVisualizarReservasComoSocio);
+		*/
 		
 		
-		
-		
-		
-		
-		
-		
-		
+
+
 	}
 
 	public JFrame getFrame() { return this.frame; }

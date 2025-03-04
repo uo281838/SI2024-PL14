@@ -13,29 +13,42 @@ public class ListaActividadesModel {
 	private Database db=new Database();
 
 
-	public List<ListaActividadesDisplayDTO> getListaCarreras(Date fechaInicio, Date fechaFin) {
+	public List<ListaActividadesDisplayDTO> getListaActividades(String fechaInicio, String fechaFin) {
 		validateNotNull(fechaInicio,MSG_PERIODO_NO_NULO);
 		validateNotNull(fechaFin,MSG_PERIODO_NO_NULO);
 		String sql = 
-		        "SELECT a.nombre AS nombre_actividad, " 
-		        + "a.descripcion, "
-		        + "i.nombre AS nombre_instalacion, "
-		        + "a.coste_socio, "
-		        + "a.coste_no_socio, "
-		        + "p.nombre AS nombre_periodo, "
-		        + "a.fecha_inicio, "
-		        + "a.fecha_fin "
+		        "SELECT a.nombre AS nombre, " 
+		        + "a.descripcion AS desc, "
+		        + "i.nombre AS inst, "
+		        + "a.coste_socio AS precio_s, "
+		        + "a.coste_no_socio AS precio_n, "
+		        + "p.nombre AS periodo, "
+		        + "a.fecha_inicio AS finicio, "
+		        + "a.fecha_fin AS ffin "
 		        + "FROM ACTIVIDAD a "
 		        + "JOIN INSTALACION i ON a.instalacion_id = i.id "
 		        + "LEFT JOIN PERIODO_INSCRIPCION p ON a.periodo_inscripcion_id = p.id "
-		        + "WHERE a.fecha_inicio <= ? " 
-		        + "AND a.fecha_fin >= ?";
+		        + "WHERE finicio >= " + "\"" + fechaInicio + "\" " 
+		        + "AND ffin <= " + "\"" + fechaFin + "\"" ;
+		// Debug
+		//System.out.println(sql);
+		//System.out.println(fechaInicio);
+		//System.out.println(fechaFin);
 
-		    String f1 = Util.dateToIsoString(fechaInicio);
-		    String f2 = Util.dateToIsoString(fechaFin);
-		    
-		return db.executeQueryPojo(ListaActividadesDisplayDTO.class, sql, f1, f2);
+		
+		return db.executeQueryPojo(ListaActividadesDisplayDTO.class, sql);
+		
+
+		
+		
 	}
+	
+	public List<PeriodoDTO> getPeriodos() {
+	    String sql = "SELECT id, nombre, fecha_inicio_socios AS fecha_inicio, fecha_fin_no_socios AS fecha_fin FROM PERIODO_INSCRIPCION";
+	    return db.executeQueryPojo(PeriodoDTO.class, sql);
+	}
+
+
 	
 	private void validateNotNull(Object obj, String message) {
 		if (obj==null)
