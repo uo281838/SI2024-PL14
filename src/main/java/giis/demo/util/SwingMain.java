@@ -13,6 +13,7 @@ import giis.demo.tkrun.*;
 import diego_Actividad.*;
 import diego_periodoInscripcion.*;
 import unai.lista_actividades.*;
+import unai.ver_reservas.*;
 /*
 import model.VisualizarReservasComoSocioModel;
 import view.VisualizarReservasComoSocioView;
@@ -121,6 +122,15 @@ public class SwingMain {
 			}
 		});
 		frame.getContentPane().add(btnVerListaActividades);
+		
+		JButton btnReservasInstalacion = new JButton("Ver reservas de una instalacion");
+		btnReservasInstalacion.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
+			public void actionPerformed(ActionEvent e) {
+				ReservaInstalacionController controller=new ReservaInstalacionController(new ReservaInstalacionModel(), new ReservaInstalacionView());
+				controller.initController();
+			}
+		});
+		frame.getContentPane().add(btnReservasInstalacion);
 
 		/*
 		JButton btnVisualizarReservasComoSocio = new JButton("Ver reservas como socio");
