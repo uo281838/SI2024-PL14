@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import com.toedter.calendar.JDateChooser;
 import java.awt.Component;
+import java.awt.Font;
 
 /**
  * Vista de la pantalla que muestra las carreras activas y permite interactuar con ellas.
@@ -51,46 +52,54 @@ public class ListaActividadesView {
 		frame = new JFrame();
 		frame.setTitle("Carreras");
 		frame.setName("Carreras");
-		frame.setBounds(0, 0, 732, 540);
-		frame.setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+		frame.setBounds(0, 0, 919, 614);
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
 		JPanel contentPane = new JPanel();
 		contentPane.setLayout(null);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-		contentPane.setBounds(20, 11, 622, 487);
+		contentPane.setBounds(20, 11, 873, 564);
 		frame.getContentPane().add(contentPane);
 		
 		cbPeriodo = new JComboBox<>();
-		cbPeriodo.setBounds(87, 11, 103, 22);
+		cbPeriodo.setBounds(138, 48, 194, 22);
 		contentPane.add(cbPeriodo);
 		
 		JLabel lblPeriodo = new JLabel("Periodo:");
-		lblPeriodo.setBounds(20, 19, 67, 14);
+		lblPeriodo.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblPeriodo.setBounds(20, 52, 108, 14);
 		contentPane.add(lblPeriodo);
 		
 		fecha1 = new JDateChooser();
-		fecha1.setBounds(87, 44, 103, 20);
+		fecha1.setBounds(138, 77, 103, 20);
 		contentPane.add(fecha1);
 		
 		fecha2 = new JDateChooser();
-		fecha2.setBounds(87, 75, 103, 20);
+		fecha2.setBounds(138, 108, 103, 20);
 		contentPane.add(fecha2);
 		
 		JLabel lblFechaInicio = new JLabel("Fecha inicio:");
-		lblFechaInicio.setBounds(20, 50, 67, 14);
+		lblFechaInicio.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblFechaInicio.setBounds(20, 83, 108, 14);
 		contentPane.add(lblFechaInicio);
 		
 		JLabel lblFechaFin = new JLabel("Fecha fin:");
-		lblFechaFin.setBounds(20, 81, 67, 14);
+		lblFechaFin.setFont(new Font("Tahoma", Font.PLAIN, 12));
+		lblFechaFin.setBounds(20, 114, 108, 14);
 		contentPane.add(lblFechaFin);
 		
 		JScrollPane tablePanel = new JScrollPane((Component) null);
-		tablePanel.setBounds(30, 106, 521, 312);
+		tablePanel.setBounds(20, 164, 828, 312);
 		contentPane.add(tablePanel);
 		
 		tabActividades = new JTable();
 		tablePanel.setViewportView(tabActividades);
+		
+		JLabel lblSeleccionaFechasPara = new JLabel("Selecciona fechas para mostrar las actividades disponibles");
+		lblSeleccionaFechasPara.setFont(new Font("Tahoma", Font.BOLD, 17));
+		lblSeleccionaFechasPara.setBounds(20, 11, 602, 26);
+		contentPane.add(lblSeleccionaFechasPara);
 	}
 
 	//Getters y Setters anyadidos para acceso desde el controlador (repersentacion compacta)

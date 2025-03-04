@@ -4,9 +4,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
@@ -27,8 +30,27 @@ public class ListaActividadesController {
 		//Inicializa la fecha de hoy a un valor que permitira mostrar carreras en diferentes fases 
 		//y actualiza los datos de la vista
 	    cargarPeriodosEnComboBox();
+	    //actualizarFechasDesdePeriodo();
+	    
+	    /* 
+	    String fecha = formatDate(view.fechaFin().getDate());
+	    fecha = LocalDate.parse(fecha).plusDays(1).toString();
+	    //System.out.print(fecha);
+	    //System.out.println();
+	    /* SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+	    try {
+			Date date = formatter.parse(fecha);
+		    view.fechaFin().setDate(date);
+
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  */
+	    
+	    
 		//Abre la ventana (sustituye al main generado por WindowBuilder)
 		view.getFrame().setVisible(true); 
+
 	}
 
     public void initController() {
@@ -52,6 +74,9 @@ public class ListaActividadesController {
     private void cargarPeriodosEnComboBox() {
     	List<PeriodoDTO> periodos = model.getPeriodos();
     	view.getListaPeriodo().removeAllItems();
+    	
+    	// Agregar un valor por defecto que indique que no hay periodo seleccionado
+        view.getListaPeriodo().addItem(""); // Esto agregará un elemento vacío al combo box
     	for (PeriodoDTO periodo : periodos) {
     		view.getListaPeriodo().addItem(periodo.getNombre());
     }
@@ -63,6 +88,11 @@ public class ListaActividadesController {
         List<PeriodoDTO> periodos = model.getPeriodos();
         for (PeriodoDTO periodo : periodos) {
             if (periodo.getNombre().equals(nombrePeriodo)) {
+            	// Depuracion
+            	//System.out.print(periodo.getFecha_inicio());
+            	//System.out.println();
+            	//System.out.print(periodo.getFecha_fin());
+            	System.out.println();
                 view.setFechaInicio(Util.isoStringToDate(periodo.getFecha_inicio()));
                 view.setFechaFin(Util.isoStringToDate(periodo.getFecha_fin()));
                 break;
@@ -99,23 +129,13 @@ public class ListaActividadesController {
             return;
         }
 
-        // Convertimos las fechas a string en formato ISO
+        // Convertir las fechas a formato String (ISO)
         String fechaInicioStr = formatDate(fechaInicio);
         String fechaFinStr = formatDate(fechaFin);
 
-        // Obtener los datos del modelo
+        // Obtener las actividades desde el modelo
         List<ListaActividadesDisplayDTO> actividades = model.getListaActividades(fechaInicioStr, fechaFinStr);
 
-        // Verificar si la lista tiene datos
-        if (actividades == null || actividades.isEmpty()) {
-            System.out.println("No se encontraron actividades para el rango de fechas seleccionado.");
-            return;
-        }
-
-        // Debug: Imprimir los datos obtenidos
-        for (ListaActividadesDisplayDTO actividad : actividades) {
-            System.out.println("Actividad obtenida: " + actividad.getNombre() + " - " + actividad.getPeriodo());
-        }
 
         // Crear un nuevo modelo de tabla
         DefaultTableModel tableModel = new DefaultTableModel();
@@ -123,7 +143,10 @@ public class ListaActividadesController {
             "Nombre", "Descripción", "Instalación", "Precio Socio", "Precio No Socio", "Periodo", "Inicio", "Fin"
         });
 
-        // Llenar la tabla con los datos
+        // Limpiar las filas anteriores de la tabla
+        tableModel.setRowCount(0);
+
+        // Llenar la tabla con las nuevas actividades
         for (ListaActividadesDisplayDTO actividad : actividades) {
             tableModel.addRow(new Object[]{
                 actividad.getNombre(),
@@ -139,11 +162,12 @@ public class ListaActividadesController {
 
         // Asignar el modelo actualizado a la tabla en la vista
         view.getTablaActividades().setModel(tableModel);
-        
-        // Refrescar la vista
+
+        // Forzar la actualización visual de la tabla
         view.getTablaActividades().revalidate();
         view.getTablaActividades().repaint();
     }
+
 
     /**
      * Carga las actividades en la tabla de la vista

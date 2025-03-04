@@ -30,9 +30,10 @@ public class ListaActividadesModel {
 		        + "LEFT JOIN PERIODO_INSCRIPCION p ON a.periodo_inscripcion_id = p.id "
 		        + "WHERE finicio >= " + "\"" + fechaInicio + "\" " 
 		        + "AND ffin <= " + "\"" + fechaFin + "\"" ;
-		System.out.println(sql);
-		System.out.println(fechaInicio);
-		System.out.println(fechaFin);
+		// Debug
+		//System.out.println(sql);
+		//System.out.println(fechaInicio);
+		//System.out.println(fechaFin);
 
 		
 		return db.executeQueryPojo(ListaActividadesDisplayDTO.class, sql);
@@ -43,9 +44,10 @@ public class ListaActividadesModel {
 	}
 	
 	public List<PeriodoDTO> getPeriodos() {
-	    String sql = "SELECT id, nombre, fecha_inicio_socios, fecha_fin_no_socios FROM PERIODO_INSCRIPCION";
+	    String sql = "SELECT id, nombre, fecha_inicio_socios AS fecha_inicio, fecha_fin_no_socios AS fecha_fin FROM PERIODO_INSCRIPCION";
 	    return db.executeQueryPojo(PeriodoDTO.class, sql);
 	}
+
 
 	
 	private void validateNotNull(Object obj, String message) {
