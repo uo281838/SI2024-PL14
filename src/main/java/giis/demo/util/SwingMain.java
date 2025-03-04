@@ -7,6 +7,9 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import giis.demo.tkrun.*;
+import diego_Actividad.*;
+import diego_periodoInscripcion.*;
+import unai.lista_actividades.*;
 
 /**
  * Punto de entrada principal que incluye botones para la ejecucion de las pantallas 
@@ -80,6 +83,33 @@ public class SwingMain {
 			}
 		});
 		frame.getContentPane().add(btnCargarDatosIniciales);
+		
+		JButton btnActividades = new JButton("Añadir actividades");
+		btnActividades.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
+			public void actionPerformed(ActionEvent e) {
+				ActividadController controller=new ActividadController(new ActividadModel(), new ActividadView());
+				controller.initController();
+			}
+		});
+		frame.getContentPane().add(btnActividades);
+		
+		JButton btnPeriodoInscripcion = new JButton("Añadir periodo de inscripcion");
+		btnPeriodoInscripcion.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
+			public void actionPerformed(ActionEvent e) {
+				PeriodoController controller=new PeriodoController(new PeriodoModel(), new PeriodoView());
+				controller.initController();
+			}
+		});
+		frame.getContentPane().add(btnPeriodoInscripcion);
+		
+		JButton btnVerListaActividades = new JButton("Ver lista de actividades");
+		btnVerListaActividades.addActionListener(new ActionListener() { //NOSONAR codigo autogenerado
+			public void actionPerformed(ActionEvent e) {
+				ListaActividadesController controller=new ListaActividadesController(new ListaActividadesModel(), new ListaActividadesView());
+				controller.initController();
+			}
+		});
+		frame.getContentPane().add(btnVerListaActividades);
 	}
 
 	public JFrame getFrame() { return this.frame; }
