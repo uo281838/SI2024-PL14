@@ -7,7 +7,6 @@ import com.toedter.calendar.JDateChooser;
 public class PeriodoView {
 	private JFrame frame;
 	private JTextField txtNombre;
-	private JTextField txtDescripcion;
 	private JDateChooser dateInicio;
 	private JDateChooser dateFin;
 	private JDateChooser dateFinNoSocios;
@@ -24,8 +23,8 @@ public class PeriodoView {
 	private void initialize() {
 		frame = new JFrame("Gestión de Períodos");
 		frame.setBounds(100, 100, 600, 500);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLayout(new BorderLayout());
+		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		frame.getContentPane().setLayout(new BorderLayout());
 
 		JPanel panelFormulario = new JPanel();
 		panelFormulario.setLayout(new GridLayout(6, 2, 5, 5));
@@ -34,15 +33,11 @@ public class PeriodoView {
 		txtNombre = new JTextField();
 		panelFormulario.add(txtNombre);
 
-		panelFormulario.add(new JLabel("Descripción:"));
-		txtDescripcion = new JTextField();
-		panelFormulario.add(txtDescripcion);
-
-		panelFormulario.add(new JLabel("Fecha Inicio:"));
+		panelFormulario.add(new JLabel("Fecha Inicio para socios:"));
 		dateInicio = new JDateChooser();
 		panelFormulario.add(dateInicio);
 
-		panelFormulario.add(new JLabel("Fecha Fin:"));
+		panelFormulario.add(new JLabel("Fecha Fin para socios:"));
 		dateFin = new JDateChooser();
 		panelFormulario.add(dateFin);
 
@@ -55,11 +50,11 @@ public class PeriodoView {
 		btnMostrar = new JButton("Mostrar Períodos");
 		panelFormulario.add(btnMostrar);
 
-		frame.add(panelFormulario, BorderLayout.NORTH);
+		frame.getContentPane().add(panelFormulario, BorderLayout.NORTH);
 
 		tablaPeriodos = new JTable();
 		JScrollPane scrollTabla = new JScrollPane(tablaPeriodos);
-		frame.add(scrollTabla, BorderLayout.CENTER);
+		frame.getContentPane().add(scrollTabla, BorderLayout.CENTER);
 
 		JPanel panelDetalles = new JPanel(new BorderLayout());
 		detallePeriodo = new JTable();
@@ -69,7 +64,7 @@ public class PeriodoView {
 		listaPeriodos = new JComboBox<>();
 		panelDetalles.add(listaPeriodos, BorderLayout.SOUTH);
 
-		frame.add(panelDetalles, BorderLayout.SOUTH);
+		frame.getContentPane().add(panelDetalles, BorderLayout.SOUTH);
 	}
 
 	// Métodos para acceder a los componentes desde el controlador
@@ -81,9 +76,7 @@ public class PeriodoView {
 		return txtNombre;
 	}
 
-	public JTextField getDescripcionField() {
-		return txtDescripcion;
-	}
+
 
 	public JDateChooser getFechaInicioChooser() {
 		return dateInicio;
