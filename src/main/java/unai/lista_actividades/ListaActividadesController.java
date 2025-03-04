@@ -20,7 +20,7 @@ public class ListaActividadesController {
         initController();
     }
 
-    private void initController() {
+    public void initController() {
         // Agrega los eventos a los componentes de la vista
         view.getListaPeriodo().addActionListener(e -> cargarFechasDesdePeriodo());
         view.getTablaActividades().setModel(new DefaultTableModel(new Object[]{"Nombre", "Descripción", "Instalación", "Precio Socio", "Precio No Socio", "Periodo", "Inicio", "Fin"}, 0));
