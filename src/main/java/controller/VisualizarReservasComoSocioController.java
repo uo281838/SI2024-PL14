@@ -125,6 +125,8 @@ public class VisualizarReservasComoSocioController {
 	
 	
 	private void realizarReserva() {
+		
+		//Comprobaciones previas
 	    if (this.model.esUsuarioMoroso(idsocio)) {
 	        JOptionPane.showMessageDialog(null, "No puede realizar reservas porque está marcado como moroso.", "Acceso denegado", JOptionPane.ERROR_MESSAGE);
 	        return;
@@ -160,11 +162,18 @@ public class VisualizarReservasComoSocioController {
 	            return;
 	        }
 	    }
+	    
+	    
+	    //Obtencion de precios
 
 	    // Obtener el precio total de la reserva para las horas seleccionadas
 	    String fecha = this.view.getFTFFecha().getText();
 	    String instalacion = this.view.getCBInstalaciones().getSelectedItem().toString();
 	    Double precioTotal = obtenerPrecioTotalReserva(horasSeleccionadas, instalacion); // Ahora calculamos con las horas seleccionadas
+	    
+	    
+	    //Calculo de horas
+	    
 	    
 	    
 	    // Proceder con la reserva
@@ -176,6 +185,12 @@ public class VisualizarReservasComoSocioController {
 	        return;
 	    }
 
+	    
+	    //Ventanas de metodos de pago
+	    
+	    
+	    
+	    
 
 	    // Mostrar ventana con confirmación, opción de pago y precio total
 	    Object[] options = {"Confirmar reserva y pagar ahora", "Confirmar reserva y pagar al final del mes", "Cancelar"};
@@ -199,15 +214,59 @@ public class VisualizarReservasComoSocioController {
 	        return; // Salir de la función
 	    }
 
+	    boolean pagado = false;
+	    
 	    // Dependiendo de la opción seleccionada, procesamos el pago
 	    if (opcionSeleccionada == 0) { // Pagar ahora
-	        //procesarPagoAhora();
+	    	pagado = true;  // Marcar la reserva como pagada
 	    } else if (opcionSeleccionada == 1) { // Pagar al final del mes
-	        //procesarPagoFinalMes();
-	    }
+	        pagado = false;
 
+	    }
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	    
+	 // Obtener la fecha seleccionada
+	    String fechaRecibo = this.view.getFTFFecha().getText();
+
+	    // Concatenar las horas seleccionadas a la fecha
+	    StringBuilder fechaHora = new StringBuilder(fecha);
+	    for (Integer hora : horasSeleccionadas) {
+	        fechaHora.append(" " + String.format("%02d:00", hora)); // Formatear la hora
+	    }
+	    
+	    String nombreUsuario = this.model.getNombreUsuarioPorId(1);  // Obtener el nombre del usuario con id = 1
+
+	    
+	    
+	 // Mostrar ventana con los datos de la reserva (Recibo)
+        String recibo = String.format(
+                "**RESERVA**\n\n" +
+                "Nombre: %s\n" +
+                "Instalación: %s\n" +
+                "Fecha y hora: %s\n" +
+                "Horas reservadas: %d\n" +
+                "Precio total: %.2f €\n" +
+                "Método de pago: %s\n\n" +
+                "¡Gracias por su reserva!",
+                nombreUsuario, 
+                instalacion, 
+                fechaHora, 
+                horasSeleccionadas.size(), 
+                precioTotal, 
+                (opcionSeleccionada == 0) ? "Pago inmediato" : "Pago a fin de mes"
+        );
+
+        JOptionPane.showMessageDialog(null, recibo, "Recibo de Reserva", JOptionPane.INFORMATION_MESSAGE);
+	    
 
 	    // Realizamos las reservas de las horas
+        
 	    int i = 0;
 	    while (i < horasSeleccionadas.size()) {
 	        int horaInicio = horasSeleccionadas.get(i);
@@ -221,16 +280,55 @@ public class VisualizarReservasComoSocioController {
 	        String horaInicioStr = String.format("%02d:00", horaInicio);
 	        String horaFinStr = String.format("%02d:00", horaFin);
 
-	        this.model.reservarHora(idsocio, fecha, instalacion, horaInicioStr, horaFinStr);
+	        
+	        
+	        this.model.reservarHora(idsocio, fecha, instalacion, horaInicioStr, horaFinStr,pagado);
 
 	        i++;
+	        
+	        System.out.println(horaInicioStr);
+	        Integer idReserva = this.model.obtenerIdReserva(idsocio,fecha, instalacion, horaInicioStr);
+	        System.out.println(idReserva);
+		    if (idReserva != null) {
+		        // Hacer algo con el idReserva, como mostrarlo en un mensaje
+		    	if(pagado) {
+		    		registrarPago(idReserva, idsocio, precioTotal, pagado);
+		    	}else {
+		    		registrarPago(idReserva, idsocio, precioTotal, pagado);
+		    	}
+		    	
+		    }
 	    }
+	    
+
 
 	    // Actualizar la tabla con la nueva reserva
 	    actualizarTabla(fecha, instalacion);
 
 	    JOptionPane.showMessageDialog(null, "Reserva realizada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+	    
+	   
+
 	}
+	
+	
+	private void registrarPago(int idReserva, int idsocio, double monto, boolean pagado) {
+	    // Crear una nueva entrada en la tabla de pagos
+	    // Puedes usar tu modelo para insertar un nuevo pago, o un código específico para tu base de datos
+	    String estadoPago = pagado ? "Pagado" : "Pendiente";
+
+	    // Aquí asumimos que tienes un método en el modelo que pueda registrar el pago
+	    this.model.registrarPagoReserva(idsocio ,idReserva, monto);
+	    
+	 
+	}
+
+	
+	
+	
+    
+    
+  
 
 	// Cambiar el método de obtener precio total para usar las horas seleccionadas
 	public Double obtenerPrecioTotalReserva(List<Integer> horasSeleccionadas, String nombreInstalacion) {

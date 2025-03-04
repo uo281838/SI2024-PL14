@@ -1,7 +1,10 @@
 package model;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import giis.demo.util.Database;
 
@@ -32,11 +35,13 @@ public class VisualizarReservasComoSocioModel {
 	
 	
 	
-	public void reservarHora(int idSocio, String fecha, String instalacion, String horaInicio, String horaFin) {
+	public void reservarHora(int idSocio, String fecha, String instalacion, String horaInicio, String horaFin,boolean pagado) {
 	    String sql = "INSERT INTO RESERVA_INSTALACION (usuario_id, instalacion_id, fecha, hora_inicio, hora_fin, pagado) " +
-	                 "VALUES (?, (SELECT id FROM INSTALACION WHERE nombre = ?), ?, ?, ?, FALSE)";
-	    db.executeUpdate(sql, idSocio, instalacion, fecha, horaInicio, horaFin);
+	                 "VALUES (?, (SELECT id FROM INSTALACION WHERE nombre = ?), ?, ?, ?,?)";
+	    db.executeUpdate(sql, idSocio, instalacion, fecha, horaInicio, horaFin,pagado);
 	}
+	
+	
 
 	
 
@@ -50,6 +55,9 @@ public class VisualizarReservasComoSocioModel {
 
 		return null;
 	}
+	
+	
+	
 
 	public Double getPrecioHoraInstalacion(String nombreInstalacion) {
 
@@ -73,6 +81,29 @@ public class VisualizarReservasComoSocioModel {
 	}
 	
 	*/
+	
+	
+	public Integer obtenerIdReserva(int idSocio, String fecha, String nombreInstalacion, String horaInicio) {
+	    String sql = "SELECT id FROM RESERVA_INSTALACION " +
+	                 "WHERE usuario_id = ? AND fecha = ? AND hora_inicio = ? " +
+	                 "AND instalacion_id = (SELECT id FROM INSTALACION WHERE nombre = ?)";
+	    
+	    System.out.println("MODEL");
+	    System.out.println("Fecha: " + fecha);
+	    System.out.println("Hora Inicio: " + horaInicio);
+	    System.out.println("Instalación: " + nombreInstalacion);
+
+
+	    List<Object[]> resultado = db.executeQueryArray(sql, idSocio, fecha, horaInicio, nombreInstalacion);
+
+	    if (resultado != null && !resultado.isEmpty()) {
+	        // Suponemos que el id está en la primera columna
+	        return (Integer) resultado.get(0)[0];
+	    }
+
+	    return null; // Retorna null si no se encuentra la reserva
+	}
+
 	
 	
 
@@ -160,7 +191,72 @@ public class VisualizarReservasComoSocioModel {
 	}
 
 	
+	public String getNombreUsuarioPorId(int idUsuario) {
+	    String sql = "SELECT nombre FROM USUARIO WHERE id = ?";
+	    
+	    // Ejecutamos la consulta y obtenemos el resultado
+	    List<Object[]> resultado = db.executeQueryArray(sql, idUsuario);
+	    
+	    if (resultado != null && !resultado.isEmpty()) {
+	        // Retornamos el nombre del usuario
+	        return (String) resultado.get(0)[0];
+	    }
+	    
+	    // Si no se encuentra el usuario, retornamos null o puedes lanzar una excepción
+	    return null;
+	}
+
+	
+	/*
+	public void procesarPagoCuotaMensual(int idSocio, Double monto) {
+	    // Verificamos que el monto sea positivo
+	    if (monto <= 0) {
+	        JOptionPane.showMessageDialog(null, "El monto debe ser mayor a cero.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+
+	    // Insertamos el pago en la tabla PAGO, registrando el concepto como "cuota"
+	    String sql = "INSERT INTO PAGO (usuario_id, monto, concepto, fecha_pago) " +
+	                 "VALUES (?, ?, 'Cuota Mensual', CURRENT_DATE)";
+
+	    // Ejecutamos la inserción en la base de datos
+	    db.executeUpdate(sql, idSocio, monto);
+	    
+	    // Notificación al usuario de que el pago fue procesado correctamente
+	    JOptionPane.showMessageDialog(null, "Pago de cuota mensual procesado exitosamente.", "Pago Exitoso", JOptionPane.INFORMATION_MESSAGE);
+	}
+	
+	*/
+	public void registrarPagoReserva(int usuarioId, int reservaInstalacionId, double monto) {
+	   
+
+	    String sql = "INSERT INTO PAGO (usuario_id, reserva_instalacion_id, monto, concepto, fecha_pago) " +
+	                 "VALUES (?, ?, ?, 'reserva', CURRENT_DATE)";
+
+	    try {
+	        // Ejecutamos la consulta para insertar el pago en la tabla PAGO
+	        db.executeUpdate(sql, usuarioId, reservaInstalacionId, monto);
+	        
+
+	        // Mostrar mensaje de éxito
+	        JOptionPane.showMessageDialog(null, "Pago registrado correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+	        
+	    } catch (Exception e) {
+	        // Manejo de errores en caso de que algo falle
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(null, "Error al registrar el pago. Inténtelo de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+
+	
+
 	
 	
+
+	public void insertarPago(int usuarioId, int reservaInstalacionId, double monto, String concepto) {
+	    String sql = "INSERT INTO PAGO (usuario_id, reserva_instalacion_id, monto, concepto) VALUES (?, ?, ?, ?)";
+	    // Ejecutamos el SQL con los parámetros dados
+	    db.executeUpdate(sql, usuarioId, reservaInstalacionId, monto, concepto);
+	}
 
 }
