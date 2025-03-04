@@ -45,16 +45,15 @@ public class PeriodoController {
     public void guardarPeriodo() {
         try {
             String nombre = view.getNombreField().getText();
-            String descripcion = view.getDescripcionField().getText();
             String fechaInicio = Util.dateToIsoString(view.getFechaInicioChooser().getDate());
             String fechaFin = Util.dateToIsoString(view.getFechaFinChooser().getDate());
             String fechaFinNoSocios = Util.dateToIsoString(view.getFechaFinNoSociosChooser().getDate());
 
-            if (nombre.isEmpty() || descripcion.isEmpty() || fechaInicio == null || fechaFin == null || fechaFinNoSocios == null) {
+            if (nombre.isEmpty() || fechaInicio == null || fechaFin == null || fechaFinNoSocios == null) {
                 throw new ApplicationException("Todos los campos deben estar completos.");
             }
 
-            model.guardarPeriodo(nombre, descripcion, fechaInicio, fechaFin, fechaFinNoSocios);
+            model.guardarPeriodo(nombre, fechaInicio, fechaFin, fechaFinNoSocios);
             view.mostrarMensaje("Período guardado correctamente.");
             getListaPeriodos();
         } catch (ApplicationException ex) {

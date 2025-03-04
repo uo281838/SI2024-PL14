@@ -8,7 +8,7 @@ public class ActividadDisplayDTO {
     private int id;
     private String nombre;
     private String descripcion;
-    private int instalacionId;
+    private int instalacion_id;
     private int aforoMaximo;
     private double costeSocio;
     private double costeNoSocio;
@@ -28,7 +28,7 @@ public class ActividadDisplayDTO {
         this.id = id;
         this.nombre = nombre;
         this.descripcion = descripcion;
-        this.instalacionId = instalacionId;
+        this.instalacion_id = instalacionId;
         this.aforoMaximo = aforoMaximo;
         this.costeSocio = costeSocio;
         this.costeNoSocio = costeNoSocio;
@@ -66,11 +66,11 @@ public class ActividadDisplayDTO {
     }
 
     public int getInstalacionId() {
-        return instalacionId;
+        return instalacion_id;
     }
 
     public void setInstalacionId(int instalacionId) {
-        this.instalacionId = instalacionId;
+        this.instalacion_id = instalacionId;
     }
 
     public int getAforoMaximo() {
