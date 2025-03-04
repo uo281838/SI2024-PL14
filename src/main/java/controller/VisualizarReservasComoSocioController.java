@@ -70,6 +70,8 @@ public class VisualizarReservasComoSocioController {
 				//int selectedRow = this.view.getTablaReservas().getSelectedRow();
 				int[] selectedRows = this.view.getTablaReservas().getSelectedRows();
 				
+				
+				/*
 				for (int selectedRow : selectedRows) {
 				    String estado = (String) this.view.getTablaReservas().getValueAt(selectedRow, 1);
 				    if (!estado.equals("Disponible")) {
@@ -78,7 +80,7 @@ public class VisualizarReservasComoSocioController {
 				    }
 				}
 							
-				
+				*/
 				/*
 
 				if (selectedRow != -1) { // Si se ha seleccionado una fila
@@ -111,35 +113,137 @@ public class VisualizarReservasComoSocioController {
 		});
 		
 		
-		this.view.getBtnReservar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> {
-		    int[] selectedRows = this.view.getTablaReservas().getSelectedRows();
-		    if (selectedRows.length == 0) {
-		        JOptionPane.showMessageDialog(null, "Por favor, seleccione al menos una hora para reservar.", "Error", JOptionPane.ERROR_MESSAGE);
-		        return;
-		    }
+		this.view.getBtnReservar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> realizarReserva()));
 
-		    List<String> horasSeleccionadas = new ArrayList<>();
-		    for (int row : selectedRows) {
-		        horasSeleccionadas.add(this.view.getTablaReservas().getValueAt(row, 0).toString());
-		    }
 
-		    //String dniSocio = this.view.getTFDni().getText();
-		    String fecha = this.view.getFTFFecha().getText();
-		    String instalacion = this.view.getCBInstalaciones().getSelectedItem().toString();
-		   
 
-		    this.model.reservarHoras(idsocio, fecha, instalacion, horasSeleccionadas);
-
-		    JOptionPane.showMessageDialog(null, "Reserva realizada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-		    // Refrescar la tabla después de hacer la reserva
-		    actualizarTabla(fecha, instalacion);
-		}));
 
 		
 		
 
 	}
+	
+	
+	private void realizarReserva() {
+	    if (this.model.esUsuarioMoroso(idsocio)) {
+	        JOptionPane.showMessageDialog(null, "No puede realizar reservas porque está marcado como moroso.", "Acceso denegado", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+
+	    int[] selectedRows = this.view.getTablaReservas().getSelectedRows();
+	    if (selectedRows.length == 0) {
+	        JOptionPane.showMessageDialog(null, "Por favor, seleccione al menos una hora para reservar.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+
+	    List<Integer> horasSeleccionadas = new ArrayList<>();
+	    for (int row : selectedRows) {
+	        String horaTexto = this.view.getTablaReservas().getValueAt(row, 0).toString();
+	        int hora = Integer.parseInt(horaTexto.split(":")[0]); // Extrae solo la hora en formato entero
+	        horasSeleccionadas.add(hora);
+	    }
+
+	    horasSeleccionadas.sort(Integer::compareTo);
+
+	    for (int row : selectedRows) {
+	        String estado = (String) this.view.getTablaReservas().getValueAt(row, 1);
+	        if (!estado.equals("Disponible")) {
+	            JOptionPane.showMessageDialog(null, "Una o más horas seleccionadas ya están reservadas.", "Error", JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+	    }
+
+	    for (int i = 0; i < horasSeleccionadas.size() - 2; i++) {
+	        if (horasSeleccionadas.get(i) + 1 == horasSeleccionadas.get(i + 1) &&
+	            horasSeleccionadas.get(i + 1) + 1 == horasSeleccionadas.get(i + 2)) {
+	            JOptionPane.showMessageDialog(null, "No puede reservar más de dos horas consecutivas.", "Error", JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+	    }
+
+	    // Obtener el precio total de la reserva para las horas seleccionadas
+	    String fecha = this.view.getFTFFecha().getText();
+	    String instalacion = this.view.getCBInstalaciones().getSelectedItem().toString();
+	    Double precioTotal = obtenerPrecioTotalReserva(horasSeleccionadas, instalacion); // Ahora calculamos con las horas seleccionadas
+	    
+	    
+	    // Proceder con la reserva
+	    int horasActuales = this.model.obtenerHorasReservadas(idsocio, fecha);
+	    int horasNuevas = horasSeleccionadas.size();
+
+	    if (horasActuales + horasNuevas > 4) {
+	        JOptionPane.showMessageDialog(null, "No puede reservar más de 4 horas en un solo día.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
+
+
+	    // Mostrar ventana con confirmación, opción de pago y precio total
+	    Object[] options = {"Confirmar reserva y pagar ahora", "Confirmar reserva y pagar al final del mes", "Cancelar"};
+	    String mensaje = String.format("¿Está seguro de que desea confirmar la reserva?\n" +
+	                                   "Horas seleccionadas: %d\n" +
+	                                   "Precio total: %.2f €\n" +
+	                                   "Seleccione el método de pago:", horasSeleccionadas.size(), precioTotal);
+	    int opcionSeleccionada = JOptionPane.showOptionDialog(
+	            null,
+	            mensaje,
+	            "Confirmar Reserva y Pago",
+	            JOptionPane.DEFAULT_OPTION,
+	            JOptionPane.QUESTION_MESSAGE,
+	            null,
+	            options,
+	            options[0]); // Poner la opción predeterminada como "Confirmar reserva y pagar ahora"
+
+	    if (opcionSeleccionada == 2) {
+	        // Si el usuario selecciona "Cancelar"
+	        JOptionPane.showMessageDialog(null, "La reserva ha sido cancelada.", "Reserva Cancelada", JOptionPane.INFORMATION_MESSAGE);
+	        return; // Salir de la función
+	    }
+
+	    // Dependiendo de la opción seleccionada, procesamos el pago
+	    if (opcionSeleccionada == 0) { // Pagar ahora
+	        //procesarPagoAhora();
+	    } else if (opcionSeleccionada == 1) { // Pagar al final del mes
+	        //procesarPagoFinalMes();
+	    }
+
+
+	    // Realizamos las reservas de las horas
+	    int i = 0;
+	    while (i < horasSeleccionadas.size()) {
+	        int horaInicio = horasSeleccionadas.get(i);
+	        int horaFin = horaInicio + 1;
+
+	        if (i + 1 < horasSeleccionadas.size() && horasSeleccionadas.get(i + 1) == horaFin) {
+	            horaFin++;
+	            i++;
+	        }
+
+	        String horaInicioStr = String.format("%02d:00", horaInicio);
+	        String horaFinStr = String.format("%02d:00", horaFin);
+
+	        this.model.reservarHora(idsocio, fecha, instalacion, horaInicioStr, horaFinStr);
+
+	        i++;
+	    }
+
+	    // Actualizar la tabla con la nueva reserva
+	    actualizarTabla(fecha, instalacion);
+
+	    JOptionPane.showMessageDialog(null, "Reserva realizada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+	// Cambiar el método de obtener precio total para usar las horas seleccionadas
+	public Double obtenerPrecioTotalReserva(List<Integer> horasSeleccionadas, String nombreInstalacion) {
+	    // Paso 1: Obtener el precio por hora de la instalación
+	    Double precioPorHora = this.model.getPrecioHoraInstalacion(nombreInstalacion);
+
+	    // Paso 2: Calcular el precio total multiplicando el precio por hora por el número de horas seleccionadas
+	    Double precioTotal = precioPorHora * horasSeleccionadas.size();
+
+	    // Retornar el precio total
+	    return precioTotal;
+	}
+
 
 	//Funcion para mostrar el aforo de una determinada instalación
 	private void actualizarAforo(String instalacionSeleccionada) {
@@ -214,109 +318,117 @@ public class VisualizarReservasComoSocioController {
 	//y muestra las reservas a partir de horas en los siguientes 30 dias
 	
 	public void actualizarTabla(String fecha, String instalacion) {
-		// Limpiar la tabla antes de mostrar nuevos datos
-		DefaultTableModel modelo = (DefaultTableModel) this.view.getTablaReservasModel();
-		modelo.setRowCount(0);
-		
+	    // Limpiar la tabla antes de mostrar nuevos datos
+	    DefaultTableModel modelo = (DefaultTableModel) this.view.getTablaReservasModel();
+	    modelo.setRowCount(0);
+	    
+	    //Mostrar el precio de la instalación seleccionada
+	    Double precioHora = this.model.getPrecioHoraInstalacion(instalacion);
+	    this.view.getTFPrecioHora().setText(precioHora.toString() + "€");
 
-		if (fecha == null || fecha.trim().isEmpty() || !fecha.matches("\\d{4}-\\d{2}-\\d{2}")) {
-			// Verifica formato YYYY-MM-DD
-			JOptionPane.showMessageDialog(null, "Por favor, ingrese una fecha válida en formato YYYY-MM-DD.", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
+	    // Mostrar la fecha seleccionada en la cabecera de la tabla
+	    this.view.getLblFechaTabla().setText(fecha);
 
+	    // Obtener las reservas y actividades
+	    List<Object[]> reservas = this.model.getReservarInstalaciones(fecha, instalacion);
+	    List<Object[]> actividades = this.model.getReservarActividades(fecha, instalacion);
 
-		//Muestra la fecha seleccionada en la cabecera de la tabla
-		this.view.getLblFechaTabla().setText(fecha);
+	    // Horarios disponibles
+	    String[] horarios = { "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00", "18:00", "19:00", "20:00", "21:00", "22:00" };
 
-		// Verificar si la fecha ingresada está más de 30 días en el futuro
-		try {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			LocalDate fechaIngresada = LocalDate.parse(fecha, formatter);
-			LocalDate fechaHoy = LocalDate.now();
-			LocalDate fechaLimite = fechaHoy.plus(30, ChronoUnit.DAYS);
+	    // Crear un Set para tener acceso rápido a las horas reservadas
+	    Set<String> horariosReservados = new HashSet<>();
+	    Map<String, String> reservadosPor = new HashMap<>();
 
-			// Verificar si la fecha es anterior a hoy
-			if (fechaIngresada.isBefore(fechaHoy)) {
-				JOptionPane.showMessageDialog(null, "La fecha no puede ser anterior al día de hoy.", "Error",
-						JOptionPane.ERROR_MESSAGE);
-				return;
-			}
+	    // Añadir reservas de socios
+	    for (Object[] reserva : reservas) {
+	        if (reserva.length > 3 && reserva[0] != null && reserva[1] != null && reserva[4] != null) {
+	            String horaInicio = reserva[0].toString();
+	            String horaFin = reserva[1].toString();
+	            String dniSocio = reserva[4].toString(); // El 'dni' del socio que hizo la reserva
 
-			if (fechaIngresada.isAfter(fechaLimite)) {
-				JOptionPane.showMessageDialog(null, "No se puede seleccionar una fecha más de 30 días en el futuro.",
-						"Error", JOptionPane.ERROR_MESSAGE);
-				return;
-			}
+	            // Añadir la hora de inicio
+	            horariosReservados.add(horaInicio);
+	            // Restar 1 a la hora de fin y agregarla
+	            String horaFinMenosUno = calcularHoraAnterior(horaFin);
+	            horariosReservados.add(horaFinMenosUno);
 
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
-					"Error al analizar la fecha. Asegúrese de que esté en formato YYYY-MM-DD.", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return;
-		}
-		
+	            reservadosPor.put(horaInicio, "Socio");
+	            reservadosPor.put(horaFinMenosUno, "Socio");
+	        }
+	    }
 
-		this.obtenerPrecioHora(instalacion);
+	    // Añadir actividades
+	    for (Object[] actividad : actividades) {
+	        if (actividad.length > 1 && actividad[0] != null && actividad[1] != null) {
+	            String horaInicio = actividad[0].toString();
+	            String nombreActividad = actividad[1].toString(); // El nombre de la actividad
+	            horariosReservados.add(horaInicio); // Añadimos la actividad al conjunto de horarios reservados
+	            reservadosPor.put(horaInicio, nombreActividad); // Guardar el nombre de la actividad
+	        }
+	    }
 
-		//Almacenamos la informacion traida de la bd
-		List<Object[]> reservas = this.model.getReservarInstalaciones(fecha, instalacion);
-		List<Object[]> actividades = this.model.getReservarActividades(fecha, instalacion);
+	    // Crear el modelo de la tabla
+	    DefaultTableModel modelo1 = new DefaultTableModel();
+	    modelo1.addColumn("Horario");
+	    modelo1.addColumn("Estado");
+	    modelo1.addColumn("Reservado por");
 
-		String[] horarios = { "08:00", "09:00", "10:00", "11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00",
-				"18:00", "19:00", "20:00", "21:00", "22:00" };
+	    // Llenar la tabla con los horarios
+	    for (String hora : horarios) {
+	        String estado = "Disponible";
+	        String reservadoPorUsuario = "N/A";
 
-		// Crear un Set para tener un acceso rápido a las horas reservadas
-		// (instalaciones + actividades)
-		Set<String> horariosReservados = new HashSet<>();
-		Map<String, String> reservadosPor = new HashMap<>();
-																
+	        // Verificar si la hora está reservada
+	        if (horariosReservados.contains(hora)) {
+	            estado = "Reservado";
+	            reservadoPorUsuario = reservadosPor.get(hora);
+	        }
 
-		// Añadir reservas de socios a la lista
-		for (Object[] reserva : reservas) {
-			if (reserva.length > 3 && reserva[0] != null && reserva[1] != null && reserva[4] != null) {
-				String horaInicio = reserva[0].toString();
-				String dniSocio = reserva[4].toString(); // Esto es el 'dni' del socio que hizo la reserva
-				horariosReservados.add(horaInicio); // Guardar la hora reservada
-				reservadosPor.put(horaInicio, "Socio"); // Asociar la hora con el usuario que la reservó
-			}
-		}
+	        modelo1.addRow(new Object[] { hora, estado, reservadoPorUsuario });
+	    }
 
-		// Añadir actividades a la lista
-		for (Object[] actividad : actividades) {
-			if (actividad.length > 1 && actividad[0] != null && actividad[1] != null) {
-				String horaInicio = actividad[0].toString();
-				String nombreActividad = actividad[1].toString(); // El nombre de la actividad
-				horariosReservados.add(horaInicio); // Añadimos la actividad al conjunto de horarios reservados
-				reservadosPor.put(horaInicio, nombreActividad); // Guardar el nombre de la actividad
-			}
-		}
-
-		// Crear el modelo de la tabla
-		DefaultTableModel modelo1 = new DefaultTableModel();
-
-		//Se definen las columnas
-		modelo1.addColumn("Horario");
-		modelo1.addColumn("Estado");
-		modelo1.addColumn("Reservado por");
-
-
-		
-		//Rellenamos las filas de la tabla
-		for (String hora : horarios) {
-			String estado = horariosReservados.contains(hora) ? "Reservado" : "Disponible";
-			String reservadoPorUsuario = horariosReservados.contains(hora)
-					? (reservadosPor.get(hora).equals("Actividad") ? "Actividad" : reservadosPor.get(hora))
-					: "N/A";
-
-			
-			
-			//Se añade la fila
-			modelo1.addRow(new Object[] { hora, estado, reservadoPorUsuario });
-		}
-
-		this.view.setTablaReservasModel(modelo1);
+	    // Establecer el modelo de la tabla con los datos actualizados
+	    this.view.setTablaReservasModel(modelo1);
 	}
+
+	// Función auxiliar para calcular la hora anterior a la hora de fin
+	private String calcularHoraAnterior(String horaFin) {
+	    String[] parts = horaFin.split(":");
+	    int hora = Integer.parseInt(parts[0]);
+	    int minutos = Integer.parseInt(parts[1]);
+
+	    // Si la hora es 00, la hora anterior será 23
+	    if (hora == 0) {
+	        hora = 23;
+	    } else {
+	        hora--; // Resta una hora
+	    }
+
+	    // Formatear la hora con el formato adecuado (HH:00)
+	    return String.format("%02d:%02d", hora, minutos);
+	}
+
+
+/*
+	
+	public Double obtenerPrecioTotalReserva(int idSocio, String fecha, String nombreInstalacion) {
+	    // Paso 1: Obtener el precio por hora de la instalación
+	    Double precioPorHora = this.model.getPrecioHoraInstalacion(nombreInstalacion);
+	    
+	    // Paso 2: Obtener el número de horas reservadas para este socio en esta fecha
+	    int horasReservadas = this.model.obtenerHorasReservadas(idSocio, fecha);
+
+	    // Paso 3: Calcular el precio total multiplicando el precio por hora por el número de horas reservadas
+	    Double precioTotal = precioPorHora * horasReservadas;
+
+	    // Retornar el precio total
+	    return precioTotal;
+	}
+
+*/
+	
+	
+	
 
 }
