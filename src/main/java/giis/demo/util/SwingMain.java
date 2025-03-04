@@ -2,13 +2,17 @@ package giis.demo.util;
 
 import java.awt.EventQueue;
 import javax.swing.JFrame;
+
+import controller.ReservarInstalacionParaActividadComoAdminController;
 import controller.VisualizarReservasComoSocioController;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import giis.demo.tkrun.*;
+import model.ReservarInstalacionParaActividadComoAdminModel;
 import model.VisualizarReservasComoSocioModel;
+import view.ReservarInstalacionParaActividadComoAdminView;
 import view.VisualizarReservasComoSocioView;
 import diego_Actividad.*;
 import diego_periodoInscripcion.*;
@@ -146,6 +150,15 @@ public class SwingMain {
 			}
 		});
 		frame.getContentPane().add(btnReservasInstalacion);
+		
+		JButton btnReservarInstalacionAdmin = new JButton("Reservar instalacion para actividad");
+		btnReservarInstalacionAdmin.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				ReservarInstalacionParaActividadComoAdminController controller = new ReservarInstalacionParaActividadComoAdminController(new ReservarInstalacionParaActividadComoAdminModel(), new ReservarInstalacionParaActividadComoAdminView());
+				controller.initController();
+			}
+		});
+		frame.getContentPane().add(btnReservarInstalacionAdmin);
 
 		/*
 		JButton btnVisualizarReservasComoSocio = new JButton("Ver reservas como socio");
