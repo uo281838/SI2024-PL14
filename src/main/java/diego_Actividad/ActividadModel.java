@@ -4,6 +4,7 @@ import java.util.List;
 
 import diego_periodoInscripcion.PeriodoEntity;
 import giis.demo.util.Database;
+import unai.ver_reservas.InstalacionDTO;
 import giis.demo.util.ApplicationException;
 
 public class ActividadModel {
@@ -80,6 +81,17 @@ public class ActividadModel {
         String sql = "SELECT id, nombre FROM PERIODO_INSCRIPCION";
         return db.executeQueryArray(sql);
     }
+    
+    /**
+     * Obtener las instalaciones
+     * @return
+     */
+    public List<InstalacionDTO> getInstalaciones() {
+        String sql = "SELECT * FROM INSTALACION WHERE estado = 'DISPONIBLE'";
+        return db.executeQueryPojo(InstalacionDTO.class, sql);
+    }
+    
+    
 
 }
 

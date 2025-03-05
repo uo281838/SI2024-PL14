@@ -11,6 +11,7 @@ import diego_periodoInscripcion.PeriodoEntity;
 import giis.demo.util.ApplicationException;
 import giis.demo.util.SwingUtil;
 import giis.demo.util.Util;
+import unai.ver_reservas.InstalacionDTO;
 
 public class ActividadController {
     private ActividadModel model;
@@ -55,7 +56,6 @@ public class ActividadController {
         try {
             String nombre = view.getNombreField().getText();
             String descripcion = view.getDescripcionField().getText();
-            int instalacionId = Integer.parseInt(view.getListaInstalaciones().getText()); // Suponiendo que se recibe como texto
             int aforoMaximo = Integer.parseInt(view.getAforoMaximoField().getText());
             double costeSocio = Double.parseDouble(view.getCosteSocioField().getText());
             double costeNoSocio = Double.parseDouble(view.getCosteNoSocioField().getText());
@@ -70,11 +70,17 @@ public class ActividadController {
             int periodoInscripcionId = 0;
             Object[] selectedPeriodo = (Object[]) selectedItem;
             periodoInscripcionId = (int) selectedPeriodo[0];
+            
+            // Obtener id instalacion
+            Object selectedItem2 = view.getListaInstalaciones().getSelectedItem();
+            int instalacionId2 = 0;
+            Object [] selectedInstal = (Object []) selectedItem2;
+            instalacionId2 = (int) selectedPeriodo[0];
 
             if (nombre.isEmpty() || descripcion.isEmpty() || fechaInicio == null || fechaFin == null || dias.isEmpty() || horaInicio.isEmpty() || horaFin.isEmpty()) {
                 throw new ApplicationException("Todos los campos deben estar completos.");
             }
-
+            
             model.guardarActividad(nombre, descripcion, instalacionId, aforoMaximo, costeSocio, costeNoSocio, fechaInicio, fechaFin, dias, horaInicio, horaFin, periodoInscripcionId);
             view.mostrarMensaje("Actividad guardada correctamente.");
             getListaActividades();
@@ -141,15 +147,28 @@ public class ActividadController {
 
         }
     }
-    
- // Obtiene la lista de períodos de inscripción y los muestra en el ComboBox
+    /**
+     *  Obtiene la lista de períodos de inscripción y los muestra en el ComboBox
+     */
     public void cargarListaPeriodosInscripcion() {
         List<Object[]> periodosInscripcion = model.getListaPeriodosInscripcionArray(); // Método similar a getListaPeriodosArray
         ComboBoxModel<Object> lmodel = SwingUtil.getComboModelFromList(periodosInscripcion);
         view.getListaPeriodosInscripcion().setModel(lmodel);
     }
-
     
+    /**
+     * Carga las instalaciones en el ComboBox
+     */
+    private void cargarInstalacionesEnComboBox() {
+        List<InstalacionDTO> instalaciones = model.getInstalaciones();
+        view.getListaInstalaciones().removeAllItems();
+        view.getListaInstalaciones().addItem(""); // Opción vacía
+        for (InstalacionDTO instalacion : instalaciones) {
+            view.getListaInstalaciones().addItem(instalacion.getNombre());
+        }
+    }
+
+
     
 }
 
