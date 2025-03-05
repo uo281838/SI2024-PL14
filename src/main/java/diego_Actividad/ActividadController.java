@@ -73,9 +73,9 @@ public class ActividadController {
             
             // Obtener id instalacion
             Object selectedItem2 = view.getListaInstalaciones().getSelectedItem();
-            int instalacionId2 = 0;
+            int instalacionId = 0;
             Object [] selectedInstal = (Object []) selectedItem2;
-            instalacionId2 = (int) selectedPeriodo[0];
+            instalacionId = (int) selectedPeriodo[0];
 
             if (nombre.isEmpty() || descripcion.isEmpty() || fechaInicio == null || fechaFin == null || dias.isEmpty() || horaInicio.isEmpty() || horaFin.isEmpty()) {
                 throw new ApplicationException("Todos los campos deben estar completos.");
