@@ -2,6 +2,7 @@ package controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -166,16 +167,24 @@ public class VisualizarReservasComoSocioController {
 	private void realizarReserva() {
 		
 		String fechaSeleccionadaStr = this.view.getFTFFecha().getText();
+		
+		
 
 	    // Comprobar si la fecha de la reserva es válida
 	    if (!esReservaValida(fechaSeleccionadaStr)) {
 	        JOptionPane.showMessageDialog(null, "Las reservas se hacen con un tiempo de antelacion mínimo de 15 dias.", "Error", JOptionPane.ERROR_MESSAGE);
 	        return; // Detener el proceso si la reserva no es válida
 	    }
+	    
+	    
+	    if (this.model.masdexhorasreservadas(idsocio)) {
+	        JOptionPane.showMessageDialog(null, "No puede realizar la reserva porque ya tiene más de 15 horas reservadas en los últimos 15 días.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return;
+	    }
 		
 		//Comprobaciones previas
 	    if (this.model.esUsuarioMoroso(idsocio)) {
-	        JOptionPane.showMessageDialog(null, "No puede realizar reservas porque está marcado como moroso.", "Acceso denegado", JOptionPane.ERROR_MESSAGE);
+	        JOptionPane.showMessageDialog(null, "No puede realizar reservas debido a impagos de la cuota.", "Acceso denegado", JOptionPane.ERROR_MESSAGE);
 	        return;
 	    }
 
@@ -287,7 +296,7 @@ public class VisualizarReservasComoSocioController {
 	        fechaHora.append(" " + String.format("%02d:00", hora)); // Formatear la hora
 	    }
 	    
-	    String nombreUsuario = this.model.getNombreUsuarioPorId(1);  // Obtener el nombre del usuario con id = 1
+	    String nombreUsuario = this.model.getNombreUsuarioPorId(idsocio);  // Obtener el nombre del usuario con id = 1
 
 	    
 	    
@@ -357,6 +366,20 @@ public class VisualizarReservasComoSocioController {
 	   
 
 	}
+	
+	private boolean esFormatoFechaValido(String fecha) {
+	    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+	    try {
+	        LocalDate.parse(fecha, formatter);
+	        return true; // La fecha es válida
+	    } catch (DateTimeParseException e) {
+	        return false; // La fecha tiene un formato incorrecto
+	    }
+	}
+	
+	
+	
 	
 	
 	private void registrarPago(int idReserva, int idsocio, double monto, boolean pagado) {
@@ -468,6 +491,12 @@ public class VisualizarReservasComoSocioController {
 	    modelo.setRowCount(0);
 	    
 	    String fechaSeleccionadaStr = this.view.getFTFFecha().getText();
+	    
+	 // Comprobación de formato correcto de fecha
+	    if (!esFormatoFechaValido(fechaSeleccionadaStr)) {
+	        JOptionPane.showMessageDialog(null, "Formato de fecha inválido. Use el formato correcto: YYYY-MM-DD", "Error", JOptionPane.ERROR_MESSAGE);
+	        return; // Detener el proceso si la fecha es incorrecta
+	    }
 
 	    // Comprobar si la fecha de la visualización es válida (dentro de los próximos 30 días)
 	    if (!esVisualizacionValida(fechaSeleccionadaStr)) {

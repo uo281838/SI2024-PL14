@@ -68,6 +68,32 @@ public class VisualizarReservasComoSocioModel {
 		return ((Number) resultado.get(0)[0]).doubleValue();
 
 	}
+	
+	
+	public boolean masdexhorasreservadas(int idSocio) {
+	    String sql = "SELECT hora_inicio, hora_fin FROM RESERVA_INSTALACION " +
+	                 "WHERE usuario_id = ? AND fecha >= DATE('now', '-15 days')";
+	    
+	    List<Object[]> resultado = db.executeQueryArray(sql, idSocio);
+	    int horasReservadas = 0;
+
+	    for (Object[] reserva : resultado) {
+	        String horaInicio = (String) reserva[0];
+	        String horaFin = (String) reserva[1];
+
+	        double horaInicioDecimal = convertirHoraAEntero(horaInicio);
+	        double horaFinDecimal = convertirHoraAEntero(horaFin);
+
+	        horasReservadas += (horaFinDecimal - horaInicioDecimal);
+	        
+	        if (horasReservadas > 15) {
+	            return true;
+	        }
+	    }
+
+	    return false;
+	}
+
 
 	
 	/*

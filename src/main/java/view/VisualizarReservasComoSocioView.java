@@ -152,7 +152,7 @@ public class VisualizarReservasComoSocioView {
 	private void initialize() {
 		frmVisualizarReservas = new JFrame();
 		frmVisualizarReservas.setTitle("Visualizar reservas");
-		frmVisualizarReservas.setBounds(100, 100, 623, 581);
+		frmVisualizarReservas.setBounds(100, 100, 679, 581);
 		frmVisualizarReservas.getContentPane().setLayout(null);
 
 		JLabel lblNewLabel = new JLabel("Instalación");
@@ -175,7 +175,7 @@ public class VisualizarReservasComoSocioView {
 		frmVisualizarReservas.getContentPane().add(lblNewLabel_1);
 
 		JSeparator separator = new JSeparator();
-		separator.setBounds(10, 113, 609, 2);
+		separator.setBounds(10, 113, 645, 2);
 		frmVisualizarReservas.getContentPane().add(separator);
 
 		TFDescripcion = new JTextField();
@@ -189,7 +189,7 @@ public class VisualizarReservasComoSocioView {
 
 		separator_1 = new JSeparator();
 		separator_1.setOrientation(SwingConstants.VERTICAL);
-		separator_1.setBounds(327, 113, 19, 429);
+		separator_1.setBounds(338, 113, 8, 429);
 		frmVisualizarReservas.getContentPane().add(separator_1);
 
 		btnBuscar = new JButton("Buscar");
@@ -207,11 +207,11 @@ public class VisualizarReservasComoSocioView {
 		frmVisualizarReservas.getContentPane().add(FTFFecha);
 
 		JLabel lblNewLabel_4 = new JLabel("€/hora de la instalación:");
-		lblNewLabel_4.setBounds(10, 139, 156, 13);
+		lblNewLabel_4.setBounds(10, 139, 145, 13);
 		frmVisualizarReservas.getContentPane().add(lblNewLabel_4);
 
 		TFPrecioHora = new JLabel("");
-		TFPrecioHora.setBounds(184, 139, 85, 13);
+		TFPrecioHora.setBounds(165, 139, 85, 13);
 		frmVisualizarReservas.getContentPane().add(TFPrecioHora);
 
 		JLabel lblNewLabel_5 = new JLabel("YYYY-MM-DD");
@@ -219,7 +219,7 @@ public class VisualizarReservasComoSocioView {
 		frmVisualizarReservas.getContentPane().add(lblNewLabel_5);
 
 		LblAforo = new JLabel("");
-		LblAforo.setBounds(70, 162, 45, 13);
+		LblAforo.setBounds(65, 162, 45, 13);
 		frmVisualizarReservas.getContentPane().add(LblAforo);
 
 		lblFechaTabla = new JLabel("");
@@ -231,11 +231,11 @@ public class VisualizarReservasComoSocioView {
 		frmVisualizarReservas.getContentPane().add(btnReservar);
 		
 		JLabel lblNewLabel_2 = new JLabel("15 dias máximo tiempo de reserva");
-		lblNewLabel_2.setBounds(356, 457, 192, 13);
+		lblNewLabel_2.setBounds(356, 457, 263, 13);
 		frmVisualizarReservas.getContentPane().add(lblNewLabel_2);
 		
 		JLabel lblNewLabel_2_1 = new JLabel("30 dias máximo tiempo de visualización");
-		lblNewLabel_2_1.setBounds(356, 478, 192, 13);
+		lblNewLabel_2_1.setBounds(356, 478, 263, 13);
 		frmVisualizarReservas.getContentPane().add(lblNewLabel_2_1);
 	}
 }
