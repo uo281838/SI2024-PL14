@@ -3,6 +3,7 @@ package controller;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -45,6 +46,7 @@ public class ReservarInstalacionParaActividadComoAdminController {
 	
 	public void initController() {
 		view.getBConfirmar().addActionListener(e -> SwingUtil.exceptionWrapper(()-> {
+			comprobarFormatos(view.getTFFecha().getText(), view.getTFHoraInicio().getText(), view.getTFHoraFin().getText());
 			meterreserva();
 			cargarReservasEnTabla();
 		}));
@@ -124,6 +126,19 @@ public class ReservarInstalacionParaActividadComoAdminController {
 			return;
 			
 		}
+		
+		try {
+			// Convertir la fecha a LocalDate y comparar con la fecha actual
+		    LocalDate fechaIngresada = LocalDate.parse(dia);
+		    LocalDate hoy = LocalDate.now();
+		    if (fechaIngresada.isBefore(hoy)) {
+		        JOptionPane.showMessageDialog(null, "La fecha no puede ser anterior al día de hoy.", "Error", JOptionPane.ERROR_MESSAGE);
+		        return;
+		    }
+		} catch (DateTimeParseException e) {
+		        JOptionPane.showMessageDialog(null, "Fecha inválida.", "Error", JOptionPane.ERROR_MESSAGE);
+		        return;
+		}
 		// Expresión regular para validar formato HH:MM
 	    String regexHora = "^([01]\\d|2[0-3]):([0-5]\\d)$";
 
@@ -138,6 +153,16 @@ public class ReservarInstalacionParaActividadComoAdminController {
 	        LocalTime inicio = LocalTime.parse(horainicio, formatter);
 	        LocalTime fin = LocalTime.parse(horafin, formatter);
 
+	        // Definir los límites de horario permitidos
+	        LocalTime horaMinima = LocalTime.of(9, 0);  // 09:00
+	        LocalTime horaMaxima = LocalTime.of(22, 0); // 22:00
+
+	        // Verificar si las horas están dentro del rango permitido
+	        if (inicio.isBefore(horaMinima) || inicio.isAfter(horaMaxima) || fin.isBefore(horaMinima) || fin.isAfter(horaMaxima)) {
+	            JOptionPane.showMessageDialog(null, "Las horas deben estar entre 09:00 y 22:00.", "Error", JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+	        
 	        // Verificar que la hora fin sea al menos 1 hora después de la inicial
 	        if (fin.isBefore(inicio.plusHours(1))) {
 	            JOptionPane.showMessageDialog(null, "La hora de fin debe ser al menos 1 hora después de la inicial.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -225,10 +250,12 @@ public class ReservarInstalacionParaActividadComoAdminController {
 		    List<Object[]> reservas = model.getReservas();  // Obtener las reservas desde el modelo
 
 		    // Crear un arreglo bidimensional de objetos para el JTable
-		    Object[][] data = new Object[reservas.size()][6];  // Suponiendo que hay 6 columnas en la tabla RESERVA_INSTALACION
+		    Object[][] data = new Object[reservas.size()][7];  // Suponiendo que hay 6 columnas en la tabla RESERVA_INSTALACION
 
 		    for (int i = 0; i < reservas.size(); i++) {
 		        Object[] reserva = reservas.get(i);
+		        
+		        
 		        // Llenar el arreglo de datos con la información de cada reserva
 		        data[i][0] = reserva[0];  // usuario_id
 		        data[i][1] = reserva[1];  // instalacion_id
@@ -236,10 +263,11 @@ public class ReservarInstalacionParaActividadComoAdminController {
 		        data[i][3] = reserva[3];  // hora_inicio
 		        data[i][4] = reserva[4];  // hora_fin
 		        data[i][5] = reserva[5];  // pagado
+		        data[i][6] = reserva[6];
 		    }
 
 		    // Definir los nombres de las columnas
-		    String[] columnNames = {"Usuario ID", "Instalación ID", "Fecha", "Hora Inicio", "Hora Fin", "Pagado"};
+		    String[] columnNames = {"Reserva id", "Usuario ID", "Instalación ID", "Fecha", "Hora Inicio", "Hora Fin", "Pagado"};
 
 		    // Crear un DefaultTableModel con los datos obtenidos
 		    DefaultTableModel modelTable = new DefaultTableModel(data, columnNames);

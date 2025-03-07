@@ -129,12 +129,12 @@ public class ReservarInstalacionParaSocioComoAdminController {
 		this.view.setCBInstalacionModel(modelo);
 	}
 	
-	public void insertarCorrectamenteDatos(String dia, String horainicio, String horafin) {
+	public boolean insertarCorrectamenteDatos(String dia, String horainicio, String horafin) {
 		if(dia == null || dia.trim().isEmpty() || !dia.matches("\\d{4}-\\d{2}-\\d{2}")) {
 			// Verificamos el formato YYYY-MM-DD
 			JOptionPane.showMessageDialog(null, "Por favor, ingrese una fecha válida en forato YYYY-MM-DD.", "Error",
 					JOptionPane.ERROR_MESSAGE);
-			return;
+			return false;
 			
 		}
 		
@@ -149,32 +149,32 @@ public class ReservarInstalacionParaSocioComoAdminController {
 			if (fechaIngresada.isBefore(fechaHoy)) {
 				JOptionPane.showMessageDialog(null, "La fecha no puede ser anterior al día de hoy.", "Error",
 						JOptionPane.ERROR_MESSAGE);
-				return;
+				return false;
 			}
 
 			if (fechaIngresada.isAfter(fechaLimite)) {
 				JOptionPane.showMessageDialog(null, "No se puede seleccionar una fecha más de 30 días en el futuro.",
 						"Error", JOptionPane.ERROR_MESSAGE);
-				return;
+				return false;
 			}
 
 		} catch (Exception e) {
 			JOptionPane.showMessageDialog(null,
 					"Error al analizar la fecha. Asegúrese de que esté en formato YYYY-MM-DD.", "Error",
 					JOptionPane.ERROR_MESSAGE);
-			return;
+			return false;
 		}
 		
 		if(horainicio == null || horainicio.trim().isEmpty() || !horainicio.matches("^\\d{2}:\\d{2}$")) {
 			JOptionPane.showMessageDialog(null, "Por favor, ingrese una hora válida en forato HH:MM.", "Error",
 					JOptionPane.ERROR_MESSAGE);
-			return;
+			return false;
 		}
 		
 		if (horafin == null || horafin.trim().isEmpty() || !horafin.matches("^\\d{2}:\\d{2}$")) {
 	        JOptionPane.showMessageDialog(null, "Por favor, ingrese una hora de fin válida en formato HH:MM.", "Error",
 	                JOptionPane.ERROR_MESSAGE);
-	        return;
+	        return false;
 	    }
 		
 				 // Validar que la hora de fin no sea más de 2 horas después de la de inicio
@@ -186,22 +186,23 @@ public class ReservarInstalacionParaSocioComoAdminController {
 			        if (fin.isAfter(inicio.plusHours(2))) {
 			            JOptionPane.showMessageDialog(null, "La hora de fin no puede ser más de 2 horas después de la hora de inicio.", "Error",
 			                    JOptionPane.ERROR_MESSAGE);
-			            return;
+			            return false;
 			        }
 
 			    } catch (DateTimeParseException e) {
 			        JOptionPane.showMessageDialog(null, "Error en el formato de hora. Use HH:MM.", "Error",
 			                JOptionPane.ERROR_MESSAGE);
-			        return;
+			        return false;
 			    }
 
 			    // Si todas las validaciones son correctas
 			    JOptionPane.showMessageDialog(null, "Datos insertados correctamente.", "Éxito",
 			            JOptionPane.INFORMATION_MESSAGE);	
+			    return true;
 			
 	}
 
-	public void meterReserva() {
+	public boolean meterReserva() {
 		// Obtener los valores de los campos
         String dni = view.getTFNumeroSocio().getText();
         String nombre = view.getTFNombre().getText();
@@ -214,19 +215,23 @@ public class ReservarInstalacionParaSocioComoAdminController {
             JOptionPane.showMessageDialog(view.getFrame(), 
                                           "El usuario no existe en la base de datos.", 
                                           "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         } else if (resultado.equals("Es moroso")) {
             JOptionPane.showMessageDialog(view.getFrame(), 
                                           "No se podrá realizar la reserva porque el usuario es moroso.", 
                                           "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         } else if (resultado.equals("No es socio")) {
             JOptionPane.showMessageDialog(view.getFrame(), 
                                           "No se podrá realizar la reserva porque el usuario no es socio.", 
                                           "Error", JOptionPane.ERROR_MESSAGE);
+            return false;
         } else {
             // Usuario válido
             JOptionPane.showMessageDialog(view.getFrame(), 
                                           "El usuario es válido para realizar la reserva.", 
                                           "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            return true;
         }
 	}
 
@@ -242,6 +247,12 @@ public class ReservarInstalacionParaSocioComoAdminController {
 	    // Obtener el ID de la instalación seleccionada
 	    int instalacionId = model.getInstalacionId(instalacion);
 	    
+	   if(!insertarCorrectamenteDatos(fecha, horaInicio, horaFin)) {
+		   return;
+	   }
+	   if(!meterReserva()) {
+		   return;
+	   }
 	    
 	    // Intentar insertar la reserva
 	    boolean exito = model.insertarReserva(usuarioId, instalacionId, fecha, horaInicio, horaFin, pagado);
