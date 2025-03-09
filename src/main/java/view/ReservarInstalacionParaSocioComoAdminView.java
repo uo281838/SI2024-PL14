@@ -154,6 +154,7 @@ public class ReservarInstalacionParaSocioComoAdminView {
 		frame.getContentPane().add(lblNewLabel_7);
 		
 		TFNombre = new JTextField();
+		TFNombre.setEditable(false);
 		TFNombre.setBounds(298, 244, 190, 20);
 		frame.getContentPane().add(TFNombre);
 		TFNombre.setColumns(10);

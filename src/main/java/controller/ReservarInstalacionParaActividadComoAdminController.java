@@ -9,7 +9,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 
+import javax.swing.ComboBoxEditor;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
@@ -35,10 +38,10 @@ public class ReservarInstalacionParaActividadComoAdminController {
  		DefaultTableModel instalaciones = new DefaultTableModel(new Object[] {"Instalaciones"}, 0);
  		DefaultTableModel actividades = new DefaultTableModel(new Object[] {"Actividades"}, 0);
 		// Asignar el modelo vacío a la tabla en la vista
-		this.view.setTablaReservasModel(instalaciones);
-		this.view.setTablaActividadesModel(actividades);
-		this.obtenerNombreInstalaciones();
-		this.obtenerNombreActividades();
+
+
+		
+		this.meterInstalacionesyActividades();
 		view.getFrame().setVisible(true);
 		
 		
@@ -46,23 +49,57 @@ public class ReservarInstalacionParaActividadComoAdminController {
 	
 	public void initController() {
 		view.getBConfirmar().addActionListener(e -> SwingUtil.exceptionWrapper(()-> {
-			comprobarFormatos(view.getTFFecha().getText(), view.getTFHoraInicio().getText(), view.getTFHoraFin().getText());
-			meterreserva();
-			cargarReservasEnTabla();
+			
+			
+			cargarReservasEnTabla(view.getTFFecha().getText(),
+					view.getTFHoraInicio().getText(),
+					view.getTFHoraFin().getText());
+			confirmarReserva();
 		}));
 		view.getbComprobar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> {
 			comprobarFormatos(view.getTFFecha().getText(), view.getTFHoraInicio().getText(), view.getTFHoraFin().getText());
 		}));
-		view.getBSeleccionar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> {
-			seleccionarInstalacion();
+		
+		
+		view.getcBInstalaciones().addActionListener(e -> SwingUtil.exceptionWrapper(() -> {
+			String seleccion = (String) view.getcBInstalaciones().getSelectedItem();
+			view.getTFInstalacion().setText(seleccion);
 		}));
-		view.getBRemover().addActionListener(e -> SwingUtil.exceptionWrapper(() -> {
-			quitarInstalacion();
+		
+		view.getCBActividades().addActionListener(e -> SwingUtil.exceptionWrapper(() -> {
+			String seleccion = (String) view.getCBActividades().getSelectedItem();
+			view.getTFActividad().setText(seleccion);
 		}));
 		
 				
 	}
 	
+	// MÉTODO PARA METER LAS INSTALACIONES Y LAS ACTIVIDADES DE LA BASE DE DATOS
+	public void meterInstalacionesyActividades() {
+		List<Object[]> list = this.model.getInstalaciones();
+		List<Object[]> list2 = this.model.getActividades();
+		
+		DefaultComboBoxModel<String> modelo = new DefaultComboBoxModel<String>();
+		DefaultComboBoxModel<String> modelo2 = new DefaultComboBoxModel<String>();
+		
+		for(Object[] fila: list) {
+			if(fila.length > 0 && fila[0] !=null) {
+				String nombreInstalacion = fila[0].toString();
+				modelo.addElement(nombreInstalacion);
+			}
+		}
+		for(Object[] fila: list2) {
+			if(fila.length>0 && fila[0] !=null) {
+				String nombreActividad = fila[0].toString();
+				modelo2.addElement(nombreActividad);
+			}
+		}
+		this.view.setcBInstalacionesModel(modelo);
+		this.view.setcBActividadesModel(modelo2);
+	}
+	
+	
+	/**
 	public void meterreserva() {
 	    // Obtener los valores de los campos de texto y la selección de la tabla
 	    String fecha = view.getTFFecha().getText();
@@ -81,6 +118,9 @@ public class ReservarInstalacionParaActividadComoAdminController {
 	            return;
 	        }
 
+	        boolean b = comprobarFormatos(fecha, horaInicio, horaFin);
+	        if(!b) return;
+	        
 	        // Obtener el id de la instalación desde el nombre de la instalación
 	        List<Object[]> instalaciones = model.getidInstalacion(); // Método en el modelo para obtener las instalaciones
 	        int instalacionId = -1;
@@ -99,12 +139,14 @@ public class ReservarInstalacionParaActividadComoAdminController {
 	            return;
 	        }
 
+	     
+	        
 	        // Valores fijos para usuario_id y pagado
 	        int usuarioId = 3;  // Usuario administrador
 	        boolean pagado = true;  // Pagado
 	        
 	        // Llamar al método para insertar la reserva
-	        boolean exito = model.insertarReservaInstalacion(3, instalacionId, fecha, horaInicio, horaFin);
+	        boolean exito = model.insertarReserva(3, instalacionId, fecha, horaInicio, horaFin,true);
 
 	        if (exito) {
 	            JOptionPane.showMessageDialog(null, "Reserva realizada correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
@@ -117,13 +159,13 @@ public class ReservarInstalacionParaActividadComoAdminController {
 	    }
 	}
 
-	
-	public void comprobarFormatos(String dia, String horainicio, String horafin) {
+	*/
+	public boolean comprobarFormatos(String dia, String horainicio, String horafin) {
 		if(dia == null || dia.trim().isEmpty() || !dia.matches("\\d{4}-\\d{2}-\\d{2}")) {
 			// Verificamos el formato YYYY-MM-DD
 			JOptionPane.showMessageDialog(null, "Por favor, ingrese una fecha válida en forato YYYY-MM-DD.", "Error",
 					JOptionPane.ERROR_MESSAGE);
-			return;
+			return false;
 			
 		}
 		
@@ -133,18 +175,18 @@ public class ReservarInstalacionParaActividadComoAdminController {
 		    LocalDate hoy = LocalDate.now();
 		    if (fechaIngresada.isBefore(hoy)) {
 		        JOptionPane.showMessageDialog(null, "La fecha no puede ser anterior al día de hoy.", "Error", JOptionPane.ERROR_MESSAGE);
-		        return;
+		        return false;
 		    }
 		} catch (DateTimeParseException e) {
 		        JOptionPane.showMessageDialog(null, "Fecha inválida.", "Error", JOptionPane.ERROR_MESSAGE);
-		        return;
+		        return false;
 		}
 		// Expresión regular para validar formato HH:MM
 	    String regexHora = "^([01]\\d|2[0-3]):([0-5]\\d)$";
 
 	    if (horainicio == null || horafin == null || !horainicio.matches(regexHora) || !horafin.matches(regexHora)) {
 	        JOptionPane.showMessageDialog(null, "Formato de hora incorrecto. Use HH:MM en formato de 24 horas.", "Error", JOptionPane.ERROR_MESSAGE);
-	        return;
+	        return false;
 	    }
 
 	    try {
@@ -160,21 +202,25 @@ public class ReservarInstalacionParaActividadComoAdminController {
 	        // Verificar si las horas están dentro del rango permitido
 	        if (inicio.isBefore(horaMinima) || inicio.isAfter(horaMaxima) || fin.isBefore(horaMinima) || fin.isAfter(horaMaxima)) {
 	            JOptionPane.showMessageDialog(null, "Las horas deben estar entre 09:00 y 22:00.", "Error", JOptionPane.ERROR_MESSAGE);
-	            return;
+	            return false;
 	        }
 	        
 	        // Verificar que la hora fin sea al menos 1 hora después de la inicial
 	        if (fin.isBefore(inicio.plusHours(1))) {
 	            JOptionPane.showMessageDialog(null, "La hora de fin debe ser al menos 1 hora después de la inicial.", "Error", JOptionPane.ERROR_MESSAGE);
+	            return false;
 	        } else {
 	            JOptionPane.showMessageDialog(null, "Fecha y horas válidas.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 	        }
 	    } catch (DateTimeParseException e) {
 	        JOptionPane.showMessageDialog(null, "Error al analizar las horas.", "Error", JOptionPane.ERROR_MESSAGE);
+	        return false;
 	    }
+	    return true;
 	}
 	
-	//Funcion para obtener los nombres de las instalaciones y poder insertarlos en el combobox
+	/**
+		//Funcion para obtener los nombres de las instalaciones y poder insertarlos en el combobox
 		public void obtenerNombreInstalaciones() {
 
 			// Obtener los resultados de la consulta (nombre y precio por hora)
@@ -246,8 +292,12 @@ public class ReservarInstalacionParaActividadComoAdminController {
 	        }
 	    }
 
-		public void cargarReservasEnTabla() {
-		    List<Object[]> reservas = model.getReservas();  // Obtener las reservas desde el modelo
+		*/
+		public void cargarReservasEnTabla(String fecha, String horainicio, String horafin) {
+		    
+			
+			
+			List<Object[]> reservas = model.getReservas();  // Obtener las reservas desde el modelo
 
 		    // Crear un arreglo bidimensional de objetos para el JTable
 		    Object[][] data = new Object[reservas.size()][7];  // Suponiendo que hay 6 columnas en la tabla RESERVA_INSTALACION
@@ -267,7 +317,7 @@ public class ReservarInstalacionParaActividadComoAdminController {
 		    }
 
 		    // Definir los nombres de las columnas
-		    String[] columnNames = {"Reserva id", "Usuario ID", "Instalación ID", "Fecha", "Hora Inicio", "Hora Fin", "Pagado"};
+		    String[] columnNames = {"Reserva id", "Usuario", "Instalación", "Hora Inicio", "Hora Fin", "Pagado"};
 
 		    // Crear un DefaultTableModel con los datos obtenidos
 		    DefaultTableModel modelTable = new DefaultTableModel(data, columnNames);
@@ -275,6 +325,35 @@ public class ReservarInstalacionParaActividadComoAdminController {
 		    // Establecer el modelo al JTable en la vista
 		    view.gettReservas().setModel(modelTable);
 		}
+		
+		public void confirmarReserva() {
+		    // Obtener los datos de la vista
+		    String fecha = view.getTFFecha().getText();
+		    String horaInicio = view.getTFHoraInicio().getText();
+		    String horaFin = view.getTFHoraFin().getText();
+		    String instalacion = (String) view.getcBInstalaciones().getSelectedItem();
+		    boolean pagado = true;
+		    int usuarioId = 3;
+		    
+		    // Obtener el ID de la instalación seleccionada
+		    int instalacionId = model.getInstalacionId(instalacion);
+		    
+		    if(!comprobarFormatos(fecha, horaInicio, horaFin)) {
+			   return;
+		    }
 
+		    // Intentar insertar la reserva
+		    boolean exito = model.insertarReserva(usuarioId, instalacionId, fecha, horaInicio, horaFin, pagado);
+		    
+		    if (exito) {
+		        JOptionPane.showMessageDialog(null, "Reserva realizada con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+		    } else {
+		        JOptionPane.showMessageDialog(null, "La instalación ya está ocupada en ese horario.", "Error", JOptionPane.ERROR_MESSAGE);
+		        List<Object[]> reservas = model.getReservasInstalacion(fecha, horaInicio, horaFin, instalacionId);
+		        String usuarioReserva = (String) reservas.get(0)[1];
+		        view.gettAConflictos().setText("La instalacion esta ya ocupada por "+ usuarioReserva);
+		    }
+		}
+		
 		
 }

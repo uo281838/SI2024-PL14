@@ -32,33 +32,31 @@ public class ReservarInstalacionParaSocioComoAdminModel {
 	}
 
 
-	// Verifica que exista el usuario en la base de datos
-	public String verificarUsuario (String dni, String nombre) {
-		// SQL para verificar la existencia del usuario con su DNI y nombre
-	    String sql = "SELECT estado, rol FROM USUARIO WHERE dni = ? AND nombre = ?";
+	public String verificarUsuario(String dni) {
+	    // SQL para verificar la existencia del usuario con su DNI
+	    String sql = "SELECT nombre, estado, rol FROM USUARIO WHERE dni = ?";
 	    
 	    // Ejecutar la consulta y obtener el resultado
-	    List<Object[]> resultados = db.executeQueryArray(sql, dni, nombre);
+	    List<Object[]> resultados = db.executeQueryArray(sql, dni);
 	    
 	    if (resultados.isEmpty()) {
-	        // Si no se encuentra ningún usuario con ese DNI y nombre
-	        return "Usuario no existe";
+	        return "Usuario no existe"; // No se encontró en la BD
 	    } else {
-	        // Si el usuario existe, verificamos su estado
-	        String estado = (String) resultados.get(0)[0];
-	        String rol = (String) resultados.get(0)[1];
-	        
-	        // Verificar si es moroso o no es socio
+	        String nombre = (String) resultados.get(0)[0];
+	        String estado = (String) resultados.get(0)[1];
+	        String rol = (String) resultados.get(0)[2];
+
 	        if (estado.equals("MOROSO")) {
-	            return "Es moroso";
+	            return "Es moroso - " + nombre; // Incluir el nombre en el mensaje
 	        } else if (rol.equals("NO_SOCIO")) {
 	            return "No es socio";
 	        } else {
-	            // El usuario es socio y no es moroso
-	            return "Usuario válido";
+	            return nombre; // Usuario válido, devolver su nombre
 	        }
 	    }
 	}
+
+
 	
 	public boolean insertarReserva(int usuarioId, int instalacionId, String fecha, String horaInicio, String horaFin, boolean pagado) {
 	    // Primero, verificar si hay reservas en el horario solicitado

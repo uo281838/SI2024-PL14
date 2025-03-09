@@ -41,33 +41,7 @@ public class ReservarInstalacionParaSocioComoAdminController {
 	    	buscar();
 	        
 	    }));
-	    
-	    /**
-	    view.getBConfirmar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> {
-	    	
-	    	String fecha = view.getTFDia().getText();
-	    	String horainicio = view.getTFHoraInicio().getText();
-	    	String horafin = view.getTFHoraFin().getText();
-	    	// int instalacionid = (int) view.getCBInstalacion().getSelectedItem();
-	    	int instalacionId = (Integer) view.getCBInstalacion().getSelectedItem();
-	    	
-	    	boolean pagado = view.getCBPagado().isSelected();
-	    	
-	    	// Obtener el ID del usuario desde el nombre (suponiendo que se haya seleccionado un usuario previamente)
-	    	String nombre = view.getTFNombre().getText();
-	    	int usuarioid =  model.obtenerUsuarioId(nombre);
-	    	model.insertarReserva(usuarioid, instalacionId, fecha, horainicio, horafin, pagado);
-	    	
-	    	// Mostrar mensaje de éxito al usuario
-	        JOptionPane.showMessageDialog(view.getFrame(), 
-	                                      "Se realizó la reserva correctamente.", 
-	                                      "Éxito", 
-	                                      JOptionPane.INFORMATION_MESSAGE);
-	        // Cerrar la ventana después de hacer clic en OK
-	        // view.getFrame().dispose(); // Cierra la ventana
-	        
-	    }));
-	    */
+	  
 	    view.getBComprobar().addActionListener(e -> SwingUtil.exceptionWrapper(() -> {
 	    	meterReserva();
 	    }));
@@ -130,110 +104,119 @@ public class ReservarInstalacionParaSocioComoAdminController {
 	}
 	
 	public boolean insertarCorrectamenteDatos(String dia, String horainicio, String horafin) {
-		if(dia == null || dia.trim().isEmpty() || !dia.matches("\\d{4}-\\d{2}-\\d{2}")) {
-			// Verificamos el formato YYYY-MM-DD
-			JOptionPane.showMessageDialog(null, "Por favor, ingrese una fecha válida en forato YYYY-MM-DD.", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return false;
-			
-		}
-		
-		// Verificar si la fecha ingresada está más de 30 días en el futuro
-		try {
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-			LocalDate fechaIngresada = LocalDate.parse(dia, formatter);
-			LocalDate fechaHoy = LocalDate.now();
-			LocalDate fechaLimite = fechaHoy.plus(30, ChronoUnit.DAYS);
-
-			// Verificar si la fecha es anterior a hoy
-			if (fechaIngresada.isBefore(fechaHoy)) {
-				JOptionPane.showMessageDialog(null, "La fecha no puede ser anterior al día de hoy.", "Error",
-						JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
-
-			if (fechaIngresada.isAfter(fechaLimite)) {
-				JOptionPane.showMessageDialog(null, "No se puede seleccionar una fecha más de 30 días en el futuro.",
-						"Error", JOptionPane.ERROR_MESSAGE);
-				return false;
-			}
-
-		} catch (Exception e) {
-			JOptionPane.showMessageDialog(null,
-					"Error al analizar la fecha. Asegúrese de que esté en formato YYYY-MM-DD.", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return false;
-		}
-		
-		if(horainicio == null || horainicio.trim().isEmpty() || !horainicio.matches("^\\d{2}:\\d{2}$")) {
-			JOptionPane.showMessageDialog(null, "Por favor, ingrese una hora válida en forato HH:MM.", "Error",
-					JOptionPane.ERROR_MESSAGE);
-			return false;
-		}
-		
-		if (horafin == null || horafin.trim().isEmpty() || !horafin.matches("^\\d{2}:\\d{2}$")) {
-	        JOptionPane.showMessageDialog(null, "Por favor, ingrese una hora de fin válida en formato HH:MM.", "Error",
+	    if (dia == null || dia.trim().isEmpty() || !dia.matches("\\d{4}-\\d{2}-\\d{2}")) {
+	        JOptionPane.showMessageDialog(null, "Por favor, ingrese una fecha válida en formato YYYY-MM-DD.", "Error",
 	                JOptionPane.ERROR_MESSAGE);
 	        return false;
 	    }
-		
-				 // Validar que la hora de fin no sea más de 2 horas después de la de inicio
-			    try {
-			        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-			        LocalTime inicio = LocalTime.parse(horainicio, timeFormatter);
-			        LocalTime fin = LocalTime.parse(horafin, timeFormatter);
 
-			        if (fin.isAfter(inicio.plusHours(2))) {
-			            JOptionPane.showMessageDialog(null, "La hora de fin no puede ser más de 2 horas después de la hora de inicio.", "Error",
-			                    JOptionPane.ERROR_MESSAGE);
-			            return false;
-			        }
+	    try {
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+	        LocalDate fechaIngresada = LocalDate.parse(dia, formatter);
+	        LocalDate fechaHoy = LocalDate.now();
+	        LocalDate fechaLimite = fechaHoy.plus(30, ChronoUnit.DAYS);
 
-			    } catch (DateTimeParseException e) {
-			        JOptionPane.showMessageDialog(null, "Error en el formato de hora. Use HH:MM.", "Error",
-			                JOptionPane.ERROR_MESSAGE);
-			        return false;
-			    }
+	        if (fechaIngresada.isBefore(fechaHoy)) {
+	            JOptionPane.showMessageDialog(null, "La fecha no puede ser anterior al día de hoy.", "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	            return false;
+	        }
 
-			    // Si todas las validaciones son correctas
-			    JOptionPane.showMessageDialog(null, "Datos insertados correctamente.", "Éxito",
-			            JOptionPane.INFORMATION_MESSAGE);	
-			    return true;
-			
+	        if (fechaIngresada.isAfter(fechaLimite)) {
+	            JOptionPane.showMessageDialog(null, "No se puede seleccionar una fecha más de 30 días en el futuro.",
+	                    "Error", JOptionPane.ERROR_MESSAGE);
+	            return false;
+	        }
+	    } catch (Exception e) {
+	        JOptionPane.showMessageDialog(null, "Error al analizar la fecha. Asegúrese de que esté en formato YYYY-MM-DD.", "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	        return false;
+	    }
+
+	    // Validar que la hora sea en formato HH:00 (horas enteras)
+	    if (horainicio == null || horainicio.trim().isEmpty() || !horainicio.matches("^(0[9-9]|1[0-9]|2[0-2]):00$")) {
+	        JOptionPane.showMessageDialog(null, "Por favor, ingrese una hora de inicio válida en formato HH:00 (entre 09:00 y 22:00).", "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	        return false;
+	    }
+
+	    if (horafin == null || horafin.trim().isEmpty() || !horafin.matches("^(0[9-9]|1[0-9]|2[0-2]):00$")) {
+	        JOptionPane.showMessageDialog(null, "Por favor, ingrese una hora de fin válida en formato HH:00 (entre 09:00 y 22:00).", "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	        return false;
+	    }
+
+	    try {
+	        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+	        LocalTime inicio = LocalTime.parse(horainicio, timeFormatter);
+	        LocalTime fin = LocalTime.parse(horafin, timeFormatter);
+
+	        // Validar que la hora de fin no sea más de 2 horas después de la de inicio
+	        if (fin.isAfter(inicio.plusHours(2))) {
+	            JOptionPane.showMessageDialog(null, "La hora de fin no puede ser más de 2 horas después de la hora de inicio.", "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	            return false;
+	        }
+
+	        // Validar que la hora de inicio es menor que la hora de fin
+	        if (inicio.isAfter(fin) || inicio.equals(fin)) {
+	            JOptionPane.showMessageDialog(null, "La hora de inicio debe ser menor que la hora de fin.", "Error",
+	                    JOptionPane.ERROR_MESSAGE);
+	            return false;
+	        }
+
+	    } catch (DateTimeParseException e) {
+	        JOptionPane.showMessageDialog(null, "Error en el formato de hora. Use HH:00.", "Error",
+	                JOptionPane.ERROR_MESSAGE);
+	        return false;
+	    }
+
+	    JOptionPane.showMessageDialog(null, "Datos insertados correctamente.", "Éxito",
+	            JOptionPane.INFORMATION_MESSAGE);
+	    return true;
 	}
+
 
 	public boolean meterReserva() {
-		// Obtener los valores de los campos
-        String dni = view.getTFNumeroSocio().getText();
-        String nombre = view.getTFNombre().getText();
-        
-        // Llamar al método del modelo para verificar al usuario
-        String resultado = model.verificarUsuario(dni, nombre);
-        
-        // Mostrar el mensaje correspondiente en función del resultado
-        if (resultado.equals("Usuario no existe")) {
-            JOptionPane.showMessageDialog(view.getFrame(), 
-                                          "El usuario no existe en la base de datos.", 
-                                          "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        } else if (resultado.equals("Es moroso")) {
-            JOptionPane.showMessageDialog(view.getFrame(), 
-                                          "No se podrá realizar la reserva porque el usuario es moroso.", 
-                                          "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        } else if (resultado.equals("No es socio")) {
-            JOptionPane.showMessageDialog(view.getFrame(), 
-                                          "No se podrá realizar la reserva porque el usuario no es socio.", 
-                                          "Error", JOptionPane.ERROR_MESSAGE);
-            return false;
-        } else {
-            // Usuario válido
-            JOptionPane.showMessageDialog(view.getFrame(), 
-                                          "El usuario es válido para realizar la reserva.", 
-                                          "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            return true;
-        }
+	    // Obtener el DNI del campo de texto
+	    String dni = view.getTFNumeroSocio().getText();
+
+	    // Llamar al modelo para verificar el usuario y obtener su estado o nombre
+	    String resultado = model.verificarUsuario(dni);
+
+	    // Evaluar el resultado devuelto
+	    if (resultado.equals("Usuario no existe")) {
+	        view.getTFNombre().setText(""); // Vaciar el campo de nombre
+	        JOptionPane.showMessageDialog(view.getFrame(), 
+	                                      "El usuario no existe en la base de datos.", 
+	                                      "Error", JOptionPane.ERROR_MESSAGE);
+	        return false;
+	    } else if (resultado.startsWith("Es moroso - ")) {
+	        // Extraer el nombre del usuario moroso
+	        String nombreMoroso = resultado.substring(11); // "Es moroso - " ocupa 11 caracteres
+	        view.getTFNombre().setText(nombreMoroso); // Mostrar el nombre en el campo
+
+	        JOptionPane.showMessageDialog(view.getFrame(), 
+	                                      "No se podrá realizar la reserva porque el usuario es moroso.\nNombre: " + nombreMoroso, 
+	                                      "Error", JOptionPane.ERROR_MESSAGE);
+	        return false;
+	    } else if (resultado.equals("No es socio")) {
+	        JOptionPane.showMessageDialog(view.getFrame(), 
+	                                      "No se podrá realizar la reserva porque el usuario no es socio.", 
+	                                      "Error", JOptionPane.ERROR_MESSAGE);
+	        return false;
+	    } else {
+	        // El usuario es válido, rellenar automáticamente el campo de nombre
+	        view.getTFNombre().setText(resultado);
+
+	        JOptionPane.showMessageDialog(view.getFrame(), 
+	                                      "El usuario es válido para realizar la reserva.", 
+	                                      "Éxito", JOptionPane.INFORMATION_MESSAGE);
+	        return true;
+	    }
 	}
+
+	
 
 	public void confirmarReserva() {
 	    // Obtener los datos de la vista

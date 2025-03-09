@@ -4,9 +4,12 @@ package model;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.swing.JOptionPane;
 
 import giis.demo.util.Database;
 
@@ -62,58 +65,73 @@ public class ReservarInstalacionParaActividadComoAdminModel {
 				return act;
 		}
 		
-		public boolean insertarReservaInstalacion(int usuario_id, int instalacion_id, String fecha, String hora_inicio, String hora_fin) {
-		    String sql = "INSERT INTO RESERVA_INSTALACION (usuario_id, instalacion_id, fecha, hora_inicio, hora_fin, pagado) " +
-		                 "VALUES (?, ?, ?, ?, ?, ?)";
-
-		    // Conexión a la base de datos
-		    try (Connection conn = db.getConnection()) { // Asegúrate de que `db.getConnection()` obtenga una conexión válida
-		        // Crear el PreparedStatement
-		        try (PreparedStatement ps = conn.prepareStatement(sql)) {
-		            // Establecer los valores en el PreparedStatement
-		            ps.setInt(1, usuario_id);
-		            ps.setInt(2, instalacion_id);
-		            ps.setString(3, fecha);
-		            ps.setString(4, hora_inicio);
-		            ps.setString(5, hora_fin);
-		            ps.setBoolean(6, true); // 'true' para pagado
-
-		            // Ejecutar la consulta de inserción
-		            int result = ps.executeUpdate();  // Ejecuta la actualización
-
-		            // Verificar si la inserción fue exitosa
-		            if (result > 0) {
-		                System.out.println("Reserva insertada correctamente.");
-		                return true;  // Inserción exitosa
-		            } else {
-		                System.out.println("Error al insertar la reserva.");
-		                return false;  // Error al insertar
-		            }
-		        } catch (SQLException e) {
-		            e.printStackTrace();
-		            return false;  // Si ocurre un error en el PreparedStatement
-		        }
-		    } catch (SQLException e) {
-		        e.printStackTrace();
-		        return false;  // Si ocurre un error en la conexión
+		public boolean insertarReserva(int usuarioId, int instalacionId, String fecha, String horaInicio, String horaFin, boolean pagado) {
+		    // Primero, verificar si hay reservas en el horario solicitado
+		    List<Object[]> reservas = getReservasInstalacion(fecha, horaInicio, horaFin, instalacionId);
+		    
+		    if (!reservas.isEmpty()) {
+		        
+		    	
+		    	// Si hay reservas, no podemos insertar la nueva reserva (ya está ocupada)
+		        return false;
 		    }
+
+		    // Si la instalación está libre, proceder a insertar la nueva reserva
+		    String sql = "INSERT INTO RESERVA_INSTALACION (usuario_id, instalacion_id, fecha, hora_inicio, hora_fin, pagado) "
+		               + "VALUES (?, ?, ?, ?, ?, ?)";
+		    db.executeUpdate(sql, usuarioId, instalacionId, fecha, horaInicio, horaFin, pagado);
+		    
+		    return true;  // Reserva insertada correctamente
 		}
 
 		// Método para obtener todas las reservas de la base de datos
 		public List<Object[]> getReservas() {
-		    String sql = "SELECT * FROM RESERVA_INSTALACION";  // Consulta para obtener todas las reservas
-		    List<Object[]> reservas = db.executeQueryArray(sql, null);
+		    String sql = "SELECT RI.id AS reserva_id, "
+		               + "U.nombre AS usuario, "
+		               + "I.nombre AS instalacion, "
+		               + "RI.fecha, "
+		               + "RI.hora_inicio, "
+		               + "RI.hora_fin, "
+		               + "RI.pagado "
+		               + "FROM RESERVA_INSTALACION RI "
+		               + "JOIN USUARIO U ON RI.usuario_id = U.id "
+		               + "JOIN INSTALACION I ON RI.instalacion_id = I.id";
 		    
-		    if (reservas == null || reservas.isEmpty()) {
-		        System.out.println("No se encontraron reservas.");
-		    } else {
-		        for (Object[] row : reservas) {
-		            // Puedes imprimir los resultados aquí si quieres, solo para depuración
-		            System.out.println("Reserva: Usuario " + row[0] + ", Instalación " + row[1] + ", Fecha " + row[2]);
-		        }
-		    }
-		    return reservas;
+		    return db.executeQueryArray(sql);
 		}
+
+
+
+		public int getInstalacionId(String instalacionNombre) {
+		    // Consultar la base de datos para obtener el id de la instalación basado en el nombre
+		    String sql = "SELECT id FROM INSTALACION WHERE nombre = ?";
+		    List<Object[]> resultados = db.executeQueryArray(sql, instalacionNombre);
+		    
+		    if (!resultados.isEmpty()) {
+		        return (int) resultados.get(0)[0];  // Retorna el id de la instalación
+		    }
+		    
+		    return -1;  // Si no se encuentra la instalación
+		}
+
+		public List<Object[]> getReservasInstalacion(String fecha, String horaInicio, String horaFin, int instalacionId) {
+		    String sql = "SELECT RI.id AS reserva_id, "
+		               + "U.nombre AS usuario, "
+		               + "I.nombre AS instalacion, "
+		               + "RI.fecha, "
+		               + "RI.hora_inicio, "
+		               + "RI.hora_fin "
+		               + "FROM RESERVA_INSTALACION RI "
+		               + "JOIN USUARIO U ON RI.usuario_id = U.id "
+		               + "JOIN INSTALACION I ON RI.instalacion_id = I.id "
+		               + "WHERE RI.instalacion_id = ? "
+		               + "AND RI.fecha = ? "
+		               + "AND ((? < RI.hora_fin AND ? > RI.hora_inicio))"; // Verifica solapamientos reales
+		    
+		    return db.executeQueryArray(sql, instalacionId, fecha, horaInicio, horaFin);
+		}
+
+
 
 	
 }
